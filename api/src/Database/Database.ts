@@ -7,7 +7,7 @@ class Database
     private password: string;
     private database: string;
     private port: number;
-    private con: mysql.Connection
+    private connection: mysql.Connection
 
     constructor() {
         this.host = 'localhost'
@@ -15,21 +15,27 @@ class Database
         this.password = 'root'
         this.database = 'Nika'
         this.port = 3307
-        this.con = mysql.createConnection({
+        this.connection = mysql.createConnection({
             host: this.host, 
             user: this.user, 
             password: this.password, 
             database: this.database, 
             port: this.port
         })
+
+        this.initialize();
     }
 
-    public connectToDatabase() {
-        this.con.connect(function(err) {
+    public initialize() {
+        this.connection.connect(function(err) {
             if (err) throw err;
-
+    
             console.log('Connected to DB');
         })
+    }
+
+    public getConnection() {
+        return this.connection;
     }
 }
 
