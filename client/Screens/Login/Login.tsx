@@ -1,39 +1,28 @@
 import { useState } from "react";
-import { View, Text, StyleSheet, TextInput, Button } from "react-native";
+import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 import useFetch from "../../Services/Hooks/UseFetch";
 import { SERVER_ORIGIN_IP, PORT_API } from '@env';
 
-function Register() {
+function Login() {
     const [fetchAPI, loading] = useFetch();
-    const [username, onChangeUsername] = useState('Test');
     const [email, onChangeEmail] = useState('test@test.fr');
     const [password, onChangePassword] = useState('test');
 
-    const sendCrendentials = async () => {
-        if (email !== '' && password !== '' && username !== '') {
-            const res = await fetchAPI({
-                url: `http://${SERVER_ORIGIN_IP}:${PORT_API}/users/register`,
+    const sendCrendentials = () => {
+        if(email !== '' && password !== '') {
+            fetchAPI({
+                url: `http://${SERVER_ORIGIN_IP}:${PORT_API}/users/login`,
                 method: 'POST',
-                body: JSON.stringify({
-                    username: username,
-                    email: email,
-                    password: password
-                })
+                body: JSON.stringify({email: email, password: password})
             })
-                .then(res => res.json())
-                .then(data => console.log(data));
+            .then(res => res.json())
+            .then(data => console.log(data));
         }
     }
 
     return (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <Text>Créer un compte</Text>
-            <TextInput
-                style={styles.input}
-                placeholder="Nom d'utilisateur"
-                value={username}
-                onChangeText={onChangeUsername}
-            />
+            <Text>Connexion</Text>
             <TextInput
                 style={styles.input}
                 placeholder="Email"
@@ -47,8 +36,8 @@ function Register() {
                 secureTextEntry={true}
                 onChangeText={onChangePassword}
             />
-            <Button
-                title="Créer mon compte"
+            <Button 
+                title="Se connecter"
                 onPress={sendCrendentials}
             />
         </View>
@@ -66,4 +55,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default Register;
+export default Login;

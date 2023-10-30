@@ -1,6 +1,5 @@
 import express, { Express } from 'express';
 import bodyParser from 'body-parser';
-import Database from '../Database/Database';
 import User from '../User/User';
 
 class Server
@@ -22,23 +21,22 @@ class Server
         this.app.use(bodyParser.urlencoded({ extended: true })) // application/x-www-form-urlencoded
 
         this.app.post('/users/register', async (req, res) => {
-            // try {
-            //     let data = this.user.addUser(req.body);
-                
-            //     res.send({test: 'coucou'});
-            // } catch (error) {
-            //     console.log('Une erreur est survenue :', error);
-            //     res.status(500).send();
-            // }
-
             try {
-                let data = await this.user.addUser(req.body);
+                await this.user.addUser(req.body);
 
-                // console.log(data);
-
-                res.status(200).send({test: 'coucou'});
+                res.status(200).send({code: 200, msg: 'Le compte a été crée avec succès.'});
             } catch (error) {
-                res.status(500).send({err: error});
+                res.status(500).send({code: 500, msg: error});
+            }
+        })
+
+        this.app.post('/users/login', async (req, res) => {
+            try {
+                const user = await this.user.findUser(req.body.email);
+
+                res.status(200).send({code: 200, msg: 'top'});
+            } catch (error) {
+                res.status(500).send({code: 500, msg: error});
             }
         })
     }
