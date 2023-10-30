@@ -1,6 +1,7 @@
 import { createContext } from "react";
 import { io } from "socket.io-client";
+import {SERVER_ORIGIN_IP, PORT_SOCKET} from "@env";
 
-export const socket = io('http://192.168.134.56:3001', {transports: ['websocket']});
+export const socket = io(`http://${SERVER_ORIGIN_IP}:${PORT_SOCKET}`, {transports: ['websocket']});
 
 export const socketContext = createContext(socket);
