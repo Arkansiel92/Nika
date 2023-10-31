@@ -1,6 +1,7 @@
 import express, { Express } from 'express';
 import bodyParser from 'body-parser';
 import User from '../User/User';
+import { User as UserType } from "../Types/User";
 
 class Server
 {
@@ -32,15 +33,21 @@ class Server
 
         this.app.post('/users/login', async (req, res) => {
             try {
-                const user = await this.user.findUser(req.body.email);
+                const user: UserType = await this.user.findUser(req.body.email);
 
-                res.status(200).send({code: 200, msg: 'top'});
+                if(!await this.user.comparePassword(req.body.password, user.password)) {
+                    throw "Les informations sont incorrectes, merci de vérifier.";
+                }
+
+                const token = this.user.generateAccessToken({email: user.email, username: user.username});
+
+                res.status(200).send({code: 200, msg: 'Identification correcte ! Vous allez être rediriger.', _token: token});
             } catch (error) {
                 res.status(500).send({code: 500, msg: error});
             }
         })
     }
- 
+
     public start() {
         this.app.listen(this.port, () => {
             console.log(`API RUNNING ON PORT ${this.port}`);

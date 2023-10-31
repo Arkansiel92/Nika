@@ -2,21 +2,38 @@ import { useState } from "react";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 import useFetch from "../../Services/Hooks/UseFetch";
 import { SERVER_ORIGIN_IP, PORT_API } from '@env';
+import { useAsyncStorage } from "../../Services/Hooks/UseAsyncStorage";
+import { useAuth } from "../../Services/Hooks/UseAuth";
 
-function Login() {
+function Login({ navigation }: any) {
     const [fetchAPI, loading] = useFetch();
+    const { login } = useAuth();
     const [email, onChangeEmail] = useState('test@test.fr');
     const [password, onChangePassword] = useState('test');
 
-    const sendCrendentials = () => {
+    const sendCrendentials = async () => {
         if(email !== '' && password !== '') {
-            fetchAPI({
+            const res = await fetchAPI({
                 url: `http://${SERVER_ORIGIN_IP}:${PORT_API}/users/login`,
                 method: 'POST',
                 body: JSON.stringify({email: email, password: password})
             })
             .then(res => res.json())
-            .then(data => console.log(data));
+            .then(data => data);
+
+            console.log(res);
+            
+            if(res.code === 200) {
+                try {
+                    login(res._token);
+
+                    navigation.navigate('Home');
+                } catch (error) {
+                    console.log(error);
+                }
+            } else {
+                console.log(res.msg);
+            }
         }
     }
 

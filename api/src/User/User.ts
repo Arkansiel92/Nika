@@ -1,11 +1,15 @@
 import bcrypt from 'bcrypt';
 import Database from "../Database/Database";
 import { Credentials } from "../Types/Credentials";
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+import { User as UserType } from "../Types/User";
 
 class User extends Database
 {
     constructor() {
         super();
+        dotenv.config();
     }
 
     public async addUser(credentials: Credentials) {
@@ -26,7 +30,15 @@ class User extends Database
         )
     }
 
-    public async findUser(email: string) {
+    public generateAccessToken(data: any) {
+        return jwt.sign(
+            data, 
+            process.env.TOKEN_SECRET as string, 
+            { expiresIn: '60d' }
+        );
+    }
+
+    public async findUser(email: string): Promise<UserType> {
         return new Promise(async (resolve, reject) => {
             let connection = this.getConnection();
             let sql = 'SELECT * from Users where email = ?'
@@ -62,7 +74,7 @@ class User extends Database
         });
     }
 
-    private async comparePassword(password: string, hashPassword: string) {
+    public async comparePassword(password: string, hashPassword: string) {
         return bcrypt.compare(password, hashPassword)
         .then(res => res)
     }
