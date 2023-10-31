@@ -39,7 +39,11 @@ class Server
                     throw "Les informations sont incorrectes, merci de vérifier.";
                 }
 
-                const token = this.user.generateAccessToken({email: user.email, username: user.username});
+                const token = this.user.generateAccessToken({
+                    id: user.id, 
+                    email: user.email, 
+                    username: user.username
+                });
 
                 res.status(200).send({code: 200, msg: 'Identification correcte ! Vous allez être rediriger.', _token: token});
             } catch (error) {

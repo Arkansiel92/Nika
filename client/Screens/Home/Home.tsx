@@ -1,15 +1,23 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { View, Text } from 'react-native'; 
 import { AuthContext } from '../../Services/Contexts/Auth/Auth';
 
-function Home() {
-    const {user, setUser} = useContext(AuthContext);
+interface props {
+    navigation: any
+}
 
-    console.log(user);
+function Home({ navigation }: props) {
+    const { authState } = useContext(AuthContext);
+
+    useEffect(() => {
+        if(!authState.isAuthenticated) navigation.navigate('Login');
+
+    }, [authState]);
 
     return(
         <View>
             <Text>Home screen</Text>
+            <Text>Connecté en tant que { authState.user?.username } !</Text>
         </View>
     )
 }

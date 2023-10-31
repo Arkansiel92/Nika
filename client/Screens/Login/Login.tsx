@@ -1,13 +1,12 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 import useFetch from "../../Services/Hooks/UseFetch";
 import { SERVER_ORIGIN_IP, PORT_API } from '@env';
-import { useAsyncStorage } from "../../Services/Hooks/UseAsyncStorage";
-import { useAuth } from "../../Services/Hooks/UseAuth";
+import { AuthContext } from "../../Services/Contexts/Auth/Auth";
 
 function Login({ navigation }: any) {
     const [fetchAPI, loading] = useFetch();
-    const { login } = useAuth();
+    const { login } = useContext(AuthContext);
     const [email, onChangeEmail] = useState('test@test.fr');
     const [password, onChangePassword] = useState('test');
 
@@ -21,13 +20,12 @@ function Login({ navigation }: any) {
             .then(res => res.json())
             .then(data => data);
 
-            console.log(res);
-            
             if(res.code === 200) {
                 try {
-                    login(res._token);
+                    login(res._token)
 
                     navigation.navigate('Home');
+                    
                 } catch (error) {
                     console.log(error);
                 }
@@ -57,6 +55,14 @@ function Login({ navigation }: any) {
                 title="Se connecter"
                 onPress={sendCrendentials}
             />
+
+            <View style={{ marginTop: 50 }}>
+                <Text>Vous n'avez pas de compte ?</Text>
+                <Button
+                    title="Créer un compte !"
+                    onPress={() => navigation.navigate("Register")}
+                />
+            </View>
         </View>
     )
 }

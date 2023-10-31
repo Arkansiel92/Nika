@@ -1,17 +1,15 @@
 import { socket, socketContext } from './Services/Contexts/Socket/Socket';
 import Router from './Router/Router';
-import { useAuth } from './Services/Hooks/UseAuth';
-import { AuthContext } from './Services/Contexts/Auth/Auth';
+import { AuthProvider } from './Services/Provider/AuthProvider';
 
 export default function App() {
-  const { user, login, logout, setUser } = useAuth();
 
   return (
-    <AuthContext.Provider value={{ user, setUser }}>
+    <AuthProvider>
       <socketContext.Provider value={socket}>
         <Router />
       </socketContext.Provider>
-    </AuthContext.Provider>
+    </AuthProvider>
   );
 }
 

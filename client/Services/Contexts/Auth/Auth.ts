@@ -1,12 +1,19 @@
 import { createContext } from "react";
 import { User } from "../../../Types/User";
+import { AuthState } from "../../../Types/AuthState";
 
 interface AuthContext {
     user: User | null;
     setUser: (user: User | null) => void;
 }
 
-export const AuthContext = createContext<AuthContext>({
+const initialAuthState: AuthState = {
     user: null,
-    setUser: () => { }
+    isAuthenticated: false
+}
+
+export const AuthContext = createContext({
+    authState: initialAuthState,
+    login: (t: string) => {},
+    logout: () => {}
 })
