@@ -2,6 +2,7 @@ import express, { Express } from 'express';
 import bodyParser from 'body-parser';
 import User from '../User/User';
 import { User as UserType } from "../Types/User";
+import authenticateJWT from '../Middleware/authenticateJWT';
 
 class Server
 {
@@ -27,6 +28,8 @@ class Server
 
                 res.status(200).send({code: 200, msg: 'Le compte a été crée avec succès.'});
             } catch (error) {
+                console.log(error);
+
                 res.status(500).send({code: 500, msg: error});
             }
         })
@@ -36,7 +39,7 @@ class Server
                 const user: UserType = await this.user.findUser(req.body.email);
 
                 if(!await this.user.comparePassword(req.body.password, user.password)) {
-                    throw "Les informations sont incorrectes, merci de vérifier.";
+                    throw "Email ou mot de passe incorrect.";
                 }
 
                 const token = this.user.generateAccessToken({
@@ -45,9 +48,21 @@ class Server
                     username: user.username
                 });
 
-                res.status(200).send({code: 200, msg: 'Identification correcte ! Vous allez être rediriger.', _token: token});
+                res.status(200).send({ code: 200, msg: 'Identification correcte ! Vous allez être rediriger.', _token: token });
             } catch (error) {
-                res.status(500).send({code: 500, msg: error});
+                console.log(error);
+                
+                res.status(500).send({ code: 500, msg: error });
+            }
+        })
+
+        this.app.get('/users/messages', authenticateJWT, async (req, res) => {
+            try {
+                res.status(200).send({ code: 200, msg: 'Récupération des messages'})
+            } catch (error) {
+                console.log(error);
+
+                res.status(500).send({ code: 500, msg: error });
             }
         })
     }

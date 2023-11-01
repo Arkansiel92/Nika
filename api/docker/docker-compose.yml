@@ -6,7 +6,7 @@ services:
     ports:
       - "3307:3306"
     volumes:
-      - db-nika:/var/lib/mysql
+      - ./bdd.sql:/docker-entrypoint-initdb.d/dump.sql
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: Nika
@@ -21,6 +21,3 @@ services:
       - 8080:80
     environment:
       PMA_HOST: database
-
-volumes:
-  db-nika:

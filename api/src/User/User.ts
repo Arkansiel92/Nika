@@ -21,7 +21,7 @@ class User extends Database
         }
 
         connection.query(
-            'INSERT INTO Users(username, email, password) VALUES (?, ?, ?)',
+            'INSERT INTO users(username, email, password) VALUES (?, ?, ?)',
             [
                 credentials.username, 
                 credentials.email, 
@@ -38,10 +38,17 @@ class User extends Database
         );
     }
 
+    // public verifyAccessToken(token: string) {
+    //     return jwt.verify(
+    //         token,
+    //         process.env.TOKEN_SECRET as string
+    //     )
+    // }
+
     public async findUser(email: string): Promise<UserType> {
         return new Promise(async (resolve, reject) => {
             let connection = this.getConnection();
-            let sql = 'SELECT * from Users where email = ?'
+            let sql = 'SELECT * from users where email = ?'
 
             connection.query(sql, [email], async function(err, result) {
                 if(err) {
@@ -61,7 +68,7 @@ class User extends Database
     public async isUserExistByEmail(email: string): Promise<boolean> {
         return new Promise<boolean>(async (resolve, reject) => {
             let connection = this.getConnection();
-            let sql = 'SELECT * from Users where email = ?';
+            let sql = 'SELECT * from users where email = ?';
     
             connection.query(sql, [email], async function (err, res) {
                 if (err) {

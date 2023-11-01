@@ -61,7 +61,7 @@ export const AuthProvider = ({ children }: any) => {
     
             let decoded = decodeJWT(token);
 
-            setAuthState({user: JSON.parse(decoded), isAuthenticated: true});
+            setAuthState({ user: JSON.parse(decoded), isAuthenticated: true });
             
             console.log(JSON.parse(decoded));
         } catch (error) {
@@ -71,7 +71,7 @@ export const AuthProvider = ({ children }: any) => {
 
     const logout = async () => {
         await removeItem("@Nika:_token");
-        setAuthState({ user: null, isAuthenticated: false});
+        setAuthState({ user: null, isAuthenticated: false });
     }
     
     return (

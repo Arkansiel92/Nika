@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useAsyncStorage } from "./UseAsyncStorage";
 
 type HttpMethod = "POST" | "GET" | "PUT";
 type fetchAPI = ({ url, method, body }: fetchProps) => Promise<Response>;
@@ -11,16 +12,17 @@ interface fetchProps {
 
 function useFetch(): [fetchAPI, boolean] {
     const [loading, setLoading] = useState(false);
+    const { getItem } = useAsyncStorage();
 
-    const setHeaders = (body: any | undefined) => {
+    const setHeaders = async (body: any | undefined) => {
         const headers: any | undefined = {
             'accept':'application/json'
         };
 
         if (body) headers['Content-Type'] = 'application/json';
 
-        // const token = localStorage.getItem('token');
-        // if (token) headers['Authorization'] = "Bearer " + token;
+        const token = await getItem("@Nika:_token");
+        if (token) headers['Authorization'] = "Bearer " + token;
         
         return headers;
     }
@@ -31,7 +33,7 @@ function useFetch(): [fetchAPI, boolean] {
         try {
             return fetch(url, {
                 method: method,
-                headers: setHeaders(body),
+                headers: await setHeaders(body),
                 body: body && body
             })
         } catch (error) {
