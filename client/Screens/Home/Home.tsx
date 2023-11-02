@@ -14,12 +14,15 @@ function Home({ navigation }: props) {
     const [messages, setMessages] = useState([]);
 
     const getMessages = async () => {
-        fetchAPI({
+        await fetchAPI({
             url: `http://${SERVER_ORIGIN_IP}:${PORT_API}/users/messages`,
             method: 'GET'
         })
-        .then(res => res)
-        .then(data => console.log(data));
+        .then(res => res.json())
+        .then(data => {
+            console.log(data); 
+            setMessages(data);
+        });
     }
 
     useEffect(() => {
@@ -32,6 +35,11 @@ function Home({ navigation }: props) {
     return(
         <View>
             <Text>Connecté en tant que { authState.user?.username } !</Text>
+            {
+                messages.length === 0
+                ? <Text>Aucun messages, vous n'avez pas d'amis.</Text>
+                : <Text>Vous avez {messages.length} messages.</Text>
+            }
         </View>
     )
 }

@@ -48,6 +48,11 @@ class Server
                     username: user.username
                 });
 
+                this.user.setId(user.id)
+                .setUsername(user.username)
+                .setEmail(user.email)
+                .setToken(token);
+
                 res.status(200).send({ code: 200, msg: 'Identification correcte ! Vous allez être rediriger.', _token: token });
             } catch (error) {
                 console.log(error);
@@ -58,7 +63,9 @@ class Server
 
         this.app.get('/users/messages', authenticateJWT, async (req, res) => {
             try {
-                res.status(200).send({ code: 200, msg: 'Récupération des messages'})
+                const data = await this.user.findUserMessages();
+
+                res.status(200).send({ code: 200, msg: 'Récupération des messages', data: data})
             } catch (error) {
                 console.log(error);
 

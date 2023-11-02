@@ -24,3 +24,6 @@ INSERT INTO users(username, email, password) VALUES('Test3', 'test3@test.fr', '$
 INSERT INTO users(username, email, password) VALUES('Test4', 'test4@test.fr', '$2b$10$KKGO6/5Y1u18z/3gXge6h.C0xVg5Lrfaoz4jmkn4GFtHbsUYllLqC');
 INSERT INTO users(username, email, password) VALUES('Test5', 'test5@test.fr', '$2b$10$KKGO6/5Y1u18z/3gXge6h.C0xVg5Lrfaoz4jmkn4GFtHbsUYllLqC');
 INSERT INTO users(username, email, password) VALUES('Test6', 'test6@test.fr', '$2b$10$KKGO6/5Y1u18z/3gXge6h.C0xVg5Lrfaoz4jmkn4GFtHbsUYllLqC');
+
+INSERT INTO messages(sender_id, receiver_id, content) VALUES(1, 2, 'Coucou bro');
+INSERT INTO messages(sender_id, receiver_id, content) VALUES(2, 1, 'Yo bro ça va ?');

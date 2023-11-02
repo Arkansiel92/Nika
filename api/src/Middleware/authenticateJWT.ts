@@ -2,11 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
-interface AuthenticatedRequest extends Request {
-    user?: any; // Vous pouvez ajuster le type de user selon vos besoins
-}
-
-const authenticateJWT = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+const authenticateJWT = (req: Request, res: Response, next: NextFunction) => {
     dotenv.config();
     const authHeader = req.headers.authorization;
 
