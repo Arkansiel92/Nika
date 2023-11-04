@@ -131,16 +131,15 @@ class User extends Database {
             }
 
             let connection = this.getConnection();
-            let sql = `SELECT DISTINCT 
-            u.id, 
-            u.username, 
-            u.email
+            let sql = `SELECT u.id, u.username, u.email, m.content, m.published_at
             FROM users u
             JOIN (
-                SELECT sender_id as user_id FROM messages WHERE receiver_id = ?
-                UNION
-                SELECT receiver_id as user_id FROM messages WHERE sender_id = ?
-            ) m ON u.id = m.user_id;`;
+                SELECT COALESCE(sender_id, receiver_id) as user_id, MAX(id) as last_message_id
+                FROM messages
+                WHERE sender_id = ? OR receiver_id = ?
+                GROUP BY COALESCE(sender_id, receiver_id)
+            ) last_messages ON u.id = last_messages.user_id
+            JOIN messages m ON last_messages.last_message_id = m.id;`;
 
             connection.query(sql, [this.id, this.id], function(err, result) {
                 if(err) {

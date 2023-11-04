@@ -67,6 +67,8 @@ class Server
 
                 res.status(200).send({ code: 200, msg: 'Récupération des conversations', data: data});
             } catch (error) {
+                console.log(error);
+                
                 res.status(500).send({ code: 500, msg: error });
             }
         })

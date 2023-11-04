@@ -3,7 +3,8 @@ import { View, Text } from 'react-native';
 import { AuthContext } from '../../Services/Contexts/Auth/Auth';
 import useFetch from '../../Services/Hooks/UseFetch';
 import { SERVER_ORIGIN_IP, PORT_API } from '@env';
-import Card from '../../Components/Card/Card';
+import CardsView from '../../Components/CardsView/CardsView';
+import { Conversation } from '../../Types/Conversation';
 
 interface props {
     navigation: any
@@ -12,7 +13,7 @@ interface props {
 function Home({ navigation }: props) {
     const { authState } = useContext(AuthContext);
     const [fetchAPI, loading] = useFetch();
-    const [conversations, setConversations] = useState<Array<any>>([]);
+    const [conversations, setConversations] = useState<Array<Conversation>>([]);
 
     const getConversations = async () => {
         await fetchAPI({
@@ -21,9 +22,8 @@ function Home({ navigation }: props) {
         })
         .then(res => res.json())
         .then(data => {
-            console.log(data); 
-            if(Array.isArray(data)) {
-                setConversations(data);
+            if(Array.isArray(data.data)) {
+                setConversations(data.data);
             }
         });
     }
@@ -37,15 +37,10 @@ function Home({ navigation }: props) {
 
     return(
         <View>
-            <Text>Connecté en tant que { authState.user?.username } !</Text>
             {
-                conversations.length
+                conversations.length === 0
                 ? <Text>Aucun messages, vous n'avez pas d'amis.</Text>
-                : <View>
-                    {conversations.map((c: any) => (
-                        <Card />
-                    ))}
-                </View>
+                : <CardsView data={conversations} />
             }
         </View>
     )
