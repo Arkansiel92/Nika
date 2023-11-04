@@ -11,8 +11,6 @@ function Logout({ navigation }: props) {
 
     useEffect(() => {
         logout();
-
-        return navigation.navigate('login');
     })
 
     return (

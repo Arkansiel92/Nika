@@ -4,6 +4,7 @@ import { Credentials } from "../Types/Credentials";
 import jwt from 'jsonwebtoken';
 import { User as UserType } from "../Types/User";
 import { Parameters } from '../Types/Parameters';
+import autoParseJSON from '../Services/AutoParseJSON';
 
 class User extends Database {
     private id: number | null
@@ -122,15 +123,59 @@ class User extends Database {
         })
     }
 
-    public async findUserMessages() {
+    public async findConversations() {
         return new Promise(async (resolve, reject) => {
             if (!this.id) {
-                reject('Veuillez vous connecter.')
+                reject('Veuillez vous connecter.');
                 return;
             }
 
             let connection = this.getConnection();
-            let sql = 'SELECT m.id, m.content, m.published_at, JSON_OBJECT("id", u.id, "username", u.username) AS sender, JSON_OBJECT("id", u2.id, "username", u2.username) AS receiver FROM messages AS m JOIN users AS u ON u.id = m.sender_id JOIN users AS u2 ON u2.id = m.receiver_id WHERE m.sender_id = ? OR m.receiver_id = ? GROUP BY m.id, sender, receiver;';
+            let sql = `SELECT DISTINCT 
+            u.id, 
+            u.username, 
+            u.email
+            FROM users u
+            JOIN (
+                SELECT sender_id as user_id FROM messages WHERE receiver_id = ?
+                UNION
+                SELECT receiver_id as user_id FROM messages WHERE sender_id = ?
+            ) m ON u.id = m.user_id;`;
+
+            connection.query(sql, [this.id, this.id], function(err, result) {
+                if(err) {
+                    reject(err);
+                    return;
+                }
+
+                resolve(autoParseJSON(result));
+            })
+        })
+    }
+
+    public async findUserMessages() {
+        return new Promise(async (resolve, reject) => {
+            if (!this.id) {
+                reject('Veuillez vous connecter.');
+                return;
+            }
+
+            let connection = this.getConnection();
+            let sql = `SELECT
+                m.id,
+                m.content,
+                m.published_at,
+                JSON_OBJECT("id", u.id, "username", u.username) AS sender,
+                JSON_OBJECT("id", u2.id, "username", u2.username) AS receiver
+                FROM messages AS m
+                JOIN users AS u
+                ON u.id = m.sender_id
+                JOIN users AS u2
+                ON u2.id = m.receiver_id
+                WHERE m.sender_id = ?
+                OR m.receiver_id = ?
+                GROUP BY m.id, sender, receiver
+                ORDER BY m.published_at DESC;`;
 
             connection.query(sql, [this.id, this.id], function (err, result) {
                 if (err) {
@@ -138,7 +183,7 @@ class User extends Database {
                     return;
                 }
 
-                resolve(result);
+                resolve(autoParseJSON(result));
             })
         })
     }

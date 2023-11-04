@@ -3,6 +3,7 @@ import { View, Text } from 'react-native';
 import { AuthContext } from '../../Services/Contexts/Auth/Auth';
 import useFetch from '../../Services/Hooks/UseFetch';
 import { SERVER_ORIGIN_IP, PORT_API } from '@env';
+import Card from '../../Components/Card/Card';
 
 interface props {
     navigation: any
@@ -11,24 +12,26 @@ interface props {
 function Home({ navigation }: props) {
     const { authState } = useContext(AuthContext);
     const [fetchAPI, loading] = useFetch();
-    const [messages, setMessages] = useState([]);
+    const [conversations, setConversations] = useState<Array<any>>([]);
 
-    const getMessages = async () => {
+    const getConversations = async () => {
         await fetchAPI({
-            url: `http://${SERVER_ORIGIN_IP}:${PORT_API}/users/messages`,
+            url: `http://${SERVER_ORIGIN_IP}:${PORT_API}/users/conversations`,
             method: 'GET'
         })
         .then(res => res.json())
         .then(data => {
             console.log(data); 
-            setMessages(data);
+            if(Array.isArray(data)) {
+                setConversations(data);
+            }
         });
     }
 
     useEffect(() => {
         if(!authState.isAuthenticated) navigation.navigate('Login');
 
-        getMessages();
+        getConversations();
 
     }, [authState]);
 
@@ -36,9 +39,13 @@ function Home({ navigation }: props) {
         <View>
             <Text>Connecté en tant que { authState.user?.username } !</Text>
             {
-                messages.length === 0
+                conversations.length
                 ? <Text>Aucun messages, vous n'avez pas d'amis.</Text>
-                : <Text>Vous avez {messages.length} messages.</Text>
+                : <View>
+                    {conversations.map((c: any) => (
+                        <Card />
+                    ))}
+                </View>
             }
         </View>
     )

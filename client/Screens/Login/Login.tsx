@@ -10,7 +10,7 @@ function Login({ navigation }: any) {
     const [email, onChangeEmail] = useState('test@test.fr');
     const [password, onChangePassword] = useState('test');
 
-    const sendCrendentials = async () => {
+    const sendCrendentials = async () => { 
         if(email !== '' && password !== '') {
             const res = await fetchAPI({
                 url: `http://${SERVER_ORIGIN_IP}:${PORT_API}/users/login`,
@@ -23,9 +23,7 @@ function Login({ navigation }: any) {
             if(res.code === 200) {
                 try {
                     login(res._token)
-
-                    navigation.navigate('Home');
-                    
+                   
                 } catch (error) {
                     console.log(error);
                 }

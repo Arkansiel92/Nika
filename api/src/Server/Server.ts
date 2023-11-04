@@ -61,14 +61,22 @@ class Server
             }
         })
 
+        this.app.get('/users/conversations', authenticateJWT, async (req, res) => {
+            try {
+                const data = await this.user.findConversations();
+
+                res.status(200).send({ code: 200, msg: 'Récupération des conversations', data: data});
+            } catch (error) {
+                res.status(500).send({ code: 500, msg: error });
+            }
+        })
+
         this.app.get('/users/messages', authenticateJWT, async (req, res) => {
             try {
                 const data = await this.user.findUserMessages();
 
-                res.status(200).send({ code: 200, msg: 'Récupération des messages', data: data})
+                res.status(200).send({ code: 200, msg: 'Récupération des messages', data: data});
             } catch (error) {
-                console.log(error);
-
                 res.status(500).send({ code: 500, msg: error });
             }
         })

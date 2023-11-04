@@ -17,110 +17,82 @@ function Router() {
 
     const { authState } = useContext(AuthContext);
 
-    // return (
-    //     <NavigationContainer>
-    //         <Stack.Navigator initialRouteName="Login">
-    //             <Stack.Screen 
-    //                 name="Register" 
-    //                 component={Register} 
-    //                 options={{title: "Créer un compte"}}
-    //             />
-    //             <Stack.Screen 
-    //                 name="Login"
-    //                 component={Login}
-    //                 options={{title: "Se connecter"}}
-    //             />
-    //             <Stack.Screen 
-    //                 name="Home"
-    //                 component={Home}
-    //                 options={{title: "Accueil"}}
-    //             />
-    //         </Stack.Navigator>
-    //     </NavigationContainer>
-    // )
-
     return (
         <NavigationContainer>
-            {
-                authState.isAuthenticated ? 
-                <Tab.Navigator
-                    screenOptions={ ({ route }) => ({
-                        tabBarIcon: ({ focused, color, size}) => {
-                            let iconName = '';
+            <Tab.Navigator
+                screenOptions={({ route }) => ({
+                    tabBarIcon: ({ focused, color, size }) => {
+                        let iconName = '';
 
-                            if(route.name === 'Home') {
-                                iconName = focused
+                        if (route.name === 'Home') {
+                            iconName = focused
                                 ? 'chatbubble-ellipses'
                                 : 'chatbubble-ellipses-outline'
-                            } else if (route.name === 'Groups') {
-                                iconName = focused
+                        } else if (route.name === 'Groups') {
+                            iconName = focused
                                 ? 'people-sharp'
                                 : 'people-outline'
-                            } else if (route.name === 'Profile') {
-                                iconName = focused
+                        } else if (route.name === 'Profile') {
+                            iconName = focused
                                 ? 'person-circle-sharp'
                                 : 'person-circle-outline'
-                            } else if (route.name === 'Logout') {
-                                iconName = 'exit-outline'
-                                color = 'red'
-                            }
-
-                            return <Ionicons name={iconName} size={size} color={color} />
-                        }
-                    }) }
-                >
-                    <Tab.Screen 
-                        name='Home' 
-                        component={Home}
-                        options={{title: "Messages"}}
-                    />
-                    <Tab.Screen 
-                        name="Groups"
-                        component={Groups}
-                        options={{title: 'Groupes'}}
-                    />
-                    <Tab.Screen 
-                        name='Profile' 
-                        component={Profile}
-                        options={{title: "Mon profil"}}
-                    />
-                    <Tab.Screen 
-                        name='Logout' 
-                        component={Logout}
-                        options={{title: "Deconnexion"}}
-                    />
-                </Tab.Navigator>
-                : <Tab.Navigator
-                    screenOptions={ ({ route }) => ({
-                        tabBarIcon: ({ focused, color, size}) => {
-                            let iconName = '';
-
-                            if (route.name === 'Register') {
-                                iconName = focused
+                        } else if (route.name === 'Logout') {
+                            iconName = 'exit-outline'
+                            color = 'red'
+                        } else if (route.name === 'Register') {
+                            iconName = focused
                                 ? 'add-circle'
                                 : 'add-circle-outline'
-                            } else if (route.name === 'Login') {
-                                iconName = focused
+                        } else if (route.name === 'Login') {
+                            iconName = focused
                                 ? 'person-circle-sharp'
                                 : 'person-circle-outline'
-                            }
-
-                            return <Ionicons name={iconName} size={size} color={color} />
                         }
-                    })}
-                >
-                <Tab.Screen 
-                    name='Login' 
-                    component={Login}
-                    options={{title: "Se connecter"}}
-                />
-                <Tab.Screen 
-                    name='Register' 
-                    component={Register}
-                    options={{title: "Créer un compte"}}
-                />
+
+                        return <Ionicons name={iconName} size={size} color={color} />
+                    }
+                })}
+            >
+                {
+                    authState.isAuthenticated ? (
+                        <>
+                            <Tab.Screen
+                                name='Home'
+                                component={Home}
+                                options={{ title: "Messages" }}
+                            />
+                            <Tab.Screen
+                                name="Groups"
+                                component={Groups}
+                                options={{ title: 'Groupes' }}
+                            />
+                            <Tab.Screen
+                                name='Profile'
+                                component={Profile}
+                                options={{ title: "Mon profil" }}
+                            />
+                            <Tab.Screen
+                                name='Logout'
+                                component={Logout}
+                                options={{ title: "Deconnexion" }}
+                            />
+                        </>
+                    ) : (
+                        <>
+                            <Tab.Screen
+                                name='Login'
+                                component={Login}
+                                options={{ title: "Se connecter" }}
+                            />
+                            <Tab.Screen
+                                name='Register'
+                                component={Register}
+                                options={{ title: "Créer un compte" }}
+                            />
+                        </>
+                    )
+                }
             </Tab.Navigator>
-            }
         </NavigationContainer>
     )
 };
