@@ -12,7 +12,6 @@ import Logout from '../Screens/Logout/Logout';
 import Groups from '../Screens/Groups/Groups';
 
 function Router() {
-    const Stack = createNativeStackNavigator();
     const Tab = createBottomTabNavigator();
 
     const { authState } = useContext(AuthContext);

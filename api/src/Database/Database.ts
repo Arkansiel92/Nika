@@ -30,7 +30,7 @@ class Database
         this.connection.connect(function(err) {
             if (err) throw err;
     
-            console.log('Connected to DB');
+            console.log('connection is established');
         })
     }
 
