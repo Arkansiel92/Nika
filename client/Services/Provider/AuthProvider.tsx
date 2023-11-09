@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { AuthState } from "../../Types/AuthState";
 import { useAsyncStorage } from '../Hooks/UseAsyncStorage';
 import { AuthContext } from '../Contexts/Auth/Auth';
+import { socketContext } from '../Contexts/Socket/Socket';
 
 function atob(input: string) {
     var keyStr = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/='
@@ -37,6 +38,7 @@ const initialAuthState: AuthState = {
 export const AuthProvider = ({ children }: any) => {
     const [authState, setAuthState] = useState<AuthState>(initialAuthState);
     const { setItem, getItem, removeItem } = useAsyncStorage();
+    const socket = useContext(socketContext);
 
     useEffect(() => {
         const getToken = async () => {
@@ -60,10 +62,12 @@ export const AuthProvider = ({ children }: any) => {
             await setItem("@Nika:_token", token);
     
             let decoded = decodeJWT(token);
+            let user = JSON.parse(decoded);
 
-            setAuthState({ user: JSON.parse(decoded), isAuthenticated: true });
-            
-            console.log(JSON.parse(decoded));
+            setAuthState({ user: user, isAuthenticated: true });
+            socket.emit('login', user);
+
+            console.log(user);
         } catch (error) {
             console.log(error);
         }

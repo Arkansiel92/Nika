@@ -63,6 +63,8 @@ class Server
 
         this.app.get('/users/conversations', authenticateJWT, async (req, res) => {
             try {
+                
+
                 const data = await this.user.findConversations();
 
                 res.status(200).send({ code: 200, msg: 'Récupération des conversations', data: data});
@@ -73,9 +75,9 @@ class Server
             }
         })
 
-        this.app.get('/users/messages', authenticateJWT, async (req, res) => {
+        this.app.get('/users/messages/:targetId', authenticateJWT, async (req, res) => {
             try {
-                const data = await this.user.findUserMessages();
+                const data = await this.user.findMessagesByTarget(req.params['targetId']);
 
                 res.status(200).send({ code: 200, msg: 'Récupération des messages', data: data});
             } catch (error) {
@@ -89,7 +91,6 @@ class Server
             console.log(`API RUNNING ON PORT ${this.port}`);
         })
     }
-
 }
 
 export default Server;

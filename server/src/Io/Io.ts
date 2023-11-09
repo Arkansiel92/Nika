@@ -34,6 +34,10 @@ class Io
             console.log(`SERVER RUNNING ON PORT ${port}`);
         });
     }
+
+    public getIo(): Server {
+        return this.io;
+    }
 }
 
 export default Io;

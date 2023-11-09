@@ -1,3 +1,4 @@
+import { useNavigation } from "@react-navigation/native";
 import { View, Text, Image, StyleSheet, TouchableWithoutFeedback } from "react-native";
 
 interface props {
@@ -8,16 +9,23 @@ interface props {
 }
 
 function Card({id, title, lastMessage, publishedAt}: props) {
+    const navigation = useNavigation<any>();
+
+    const getRandomInt = (max: number) => {
+        return Math.floor(Math.random() * max);
+    }
 
     const getConversation = () => {
-        console.log(id);
+        navigation.navigate('Conversation', {
+            targetId: id
+        });
     }
 
     return(
         <View style={styles.container}>
             <Image
                 style={styles.img}
-                source={{uri: "https://picsum.photos/55/80"}} 
+                source={{uri: `https://picsum.photos/${getRandomInt(100)}/80`}} 
                 width={80}
                 height={80}
             />
@@ -25,9 +33,9 @@ function Card({id, title, lastMessage, publishedAt}: props) {
                 <View style={styles.containerText}>
                     <View style={styles.containerTitle}>
                         <Text style={styles.title}>{title}</Text>
-                        <Text style={{color: 'grey'}}>{new Date(publishedAt).toLocaleDateString('fr')}</Text>
+                        <Text style={{ color: 'grey' }}>{ new Date(publishedAt).toLocaleDateString('fr') }</Text>
                     </View>
-                    <Text style={{color: 'grey'}}>{lastMessage.length > 50 ? lastMessage.substring(0, 100) + "..." : lastMessage}</Text>
+                    <Text style={ {color: 'grey'} }>{ lastMessage.length > 50 ? lastMessage.substring(0, 100) + "..." : lastMessage }</Text>
                 </View>
             </TouchableWithoutFeedback>
         </View>

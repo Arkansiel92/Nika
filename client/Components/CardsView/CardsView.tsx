@@ -1,4 +1,4 @@
-import { ScrollView, View, StyleSheet } from "react-native";
+import { ScrollView, StyleSheet } from "react-native";
 import { Conversation } from "../../Types/Conversation";
 import Card from "../Card/Card";
 

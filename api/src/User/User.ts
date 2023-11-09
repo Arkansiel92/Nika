@@ -182,6 +182,38 @@ class User extends Database {
                     return;
                 }
 
+                console.log(result);
+                
+
+                resolve(autoParseJSON(result));
+            })
+        })
+    }
+
+    public async findMessagesByTarget(targetId: string) {
+        return new Promise(async (resolve, reject) => {
+            if (!this.id) {
+                reject('Veuillez vous connecter');
+                return;
+            }
+
+            let connection = this.getConnection();
+            let sql = `SELECT * FROM messages 
+                WHERE (receiver_id = ? OR sender_id = ?) 
+                AND (receiver_id = ? OR sender_id = ?) 
+                ORDER BY published_at DESC`;
+
+            connection.query(sql, [
+                this.id, 
+                this.id, 
+                targetId, 
+                targetId
+            ], async function (err, result) {
+                if(err) {
+                    reject(err);
+                    return;
+                }
+
                 resolve(autoParseJSON(result));
             })
         })
