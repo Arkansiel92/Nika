@@ -36,7 +36,7 @@ class Server
 
         this.app.post('/users/login', async (req, res) => {
             try {
-                const user: UserType = await this.user.findUser(req.body.email);
+                const user: UserType = await this.user.findUserByEmail(req.body.email);
 
                 if(!await this.user.comparePassword(req.body.password, user.password)) {
                     throw "Email ou mot de passe incorrect.";
@@ -77,12 +77,17 @@ class Server
 
         this.app.get('/users/messages/:targetId', authenticateJWT, async (req, res) => {
             try {
-                const data = await this.user.findMessagesByTarget(req.params['targetId']);
+                const data = await this.user.findMessagesByUser(req.params['targetId']);
+                const target = await this.user.findUserById(req.params['targetId'])
 
-                res.status(200).send({ code: 200, msg: 'Récupération des messages', data: data});
+                res.status(200).send({ code: 200, msg: 'Récupération des messages', data: data, target: target});
             } catch (error) {
                 res.status(500).send({ code: 500, msg: error });
             }
+        })
+
+        this.app.post("/messages", authenticateJWT, async (req, res) => {
+            console.log(req.body);
         })
     }
 

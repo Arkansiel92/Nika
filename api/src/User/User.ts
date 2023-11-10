@@ -152,7 +152,7 @@ class User extends Database {
         })
     }
 
-    public async findUserMessages() {
+    public async findUserByEmailMessages() {
         return new Promise(async (resolve, reject) => {
             if (!this.id) {
                 reject('Veuillez vous connecter.');
@@ -190,7 +190,7 @@ class User extends Database {
         })
     }
 
-    public async findMessagesByTarget(targetId: string) {
+    public async findMessagesByUser(targetId: string) {
         return new Promise(async (resolve, reject) => {
             if (!this.id) {
                 reject('Veuillez vous connecter');
@@ -199,15 +199,15 @@ class User extends Database {
 
             let connection = this.getConnection();
             let sql = `SELECT * FROM messages 
-                WHERE (receiver_id = ? OR sender_id = ?) 
-                AND (receiver_id = ? OR sender_id = ?) 
-                ORDER BY published_at DESC`;
+                WHERE (receiver_id = ? AND sender_id = ?) 
+                OR (receiver_id = ? AND sender_id = ?) 
+                ORDER BY published_at`;
 
             connection.query(sql, [
                 this.id, 
-                this.id, 
                 targetId, 
-                targetId
+                targetId,
+                this.id
             ], async function (err, result) {
                 if(err) {
                     reject(err);
@@ -219,7 +219,25 @@ class User extends Database {
         })
     }
 
-    public async findUser(email: string): Promise<UserType> {
+    public async findUserById(id: string) {
+        return new Promise(async (resolve, reject) => {
+            let connection = this.getConnection();
+            let sql = 'SELECT id, email, username from users where id = ?'
+
+            connection.query(sql, [id], async function (err, result) {
+                if (err) {
+                    reject(err);
+                    return;
+                };
+
+                if (result.length) {
+                    resolve(result[0]);
+                }
+            })
+        })
+    }
+
+    public async findUserByEmail(email: string): Promise<UserType> {
         return new Promise(async (resolve, reject) => {
             let connection = this.getConnection();
             let sql = 'SELECT * from users where email = ?'

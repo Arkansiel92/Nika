@@ -99,10 +99,12 @@ function Router() {
                             <Stack.Screen
                                 name="Login"
                                 component={Login}
+                                options={{title: 'Se connecter'}}
                             />
                             <Stack.Screen
                                 name="Register"
                                 component={Register}
+                                options={{title: 'Créer un compte'}}
                             />
                         </>
                     )
