@@ -29,9 +29,26 @@ function Conversation({ route, navigation }: props) {
             if (data.code === 200) {
                 setMessage(data.data);
                 setTarget(data.target);
-                console.log(data.target);
             }
         });
+    }
+
+    const handleSubmit = (input: string, onChangeInput: React.Dispatch<React.SetStateAction<string>>) => {
+        if(input !== "") {
+            fetchAPI({
+                url: `http://${SERVER_ORIGIN_IP}:${PORT_API}/messages`,
+                method: 'POST',
+                body: JSON.stringify({
+                    receiver_id: targetId,
+                    sender_id: authState.user?.id,
+                    content: input
+                })
+            })
+            .then(res => res.json())
+            .then(data => setMessage(data.data));
+            
+            onChangeInput('');
+        }
     }
 
     useEffect(() => {
@@ -52,7 +69,7 @@ function Conversation({ route, navigation }: props) {
                 ))
             }
             </ScrollView>
-            <InputContainer receiverId={target?.id} senderId={authState.user?.id} />
+            <InputContainer handleSubmit={handleSubmit} />
         </View>
     )
 }

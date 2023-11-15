@@ -5,30 +5,14 @@ import useFetch from "../../Services/Hooks/UseFetch";
 import { PORT_API, SERVER_ORIGIN_IP } from "@env";
 
 interface props {
-    receiverId: number | undefined
-    senderId: number | undefined
+    handleSubmit: (a: string, b: React.Dispatch<React.SetStateAction<string>>) => void
 }
 
-function InputContainer({ receiverId, senderId }: props) {
+function InputContainer({ handleSubmit }: props) {
     const socket = useContext(socketContext);
     const [fetchAPI, loading] = useFetch();
     const [input, onChangeInput] = useState("");
     const [userWriting, setUserWriting] = useState<Array<String>>([]);
-
-    const handleSubmit = () => {
-        if(input !== "") {
-            fetchAPI({
-                url: `http://${SERVER_ORIGIN_IP}:${PORT_API}/messages`,
-                method: 'POST',
-                body: JSON.stringify({
-                    receiver_id: receiverId,
-                    sender_id: senderId,
-                    content: input
-                })
-            })
-            onChangeInput('');
-        }
-    }
 
     useEffect(() => {
        if(input !== "") {
@@ -57,7 +41,7 @@ function InputContainer({ receiverId, senderId }: props) {
                     placeholder="Message..."
                     value={input}
                     onChangeText={onChangeInput}
-                    onSubmitEditing={handleSubmit}
+                    onSubmitEditing={() => handleSubmit(input, onChangeInput)}
                 />
             </View>
         </View>

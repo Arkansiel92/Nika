@@ -34,7 +34,7 @@ function Login({ navigation }: any) {
 
     return (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <Text>Connexion</Text>
+            <Text>Se connecter</Text>
             <TextInput
                 style={styles.input}
                 placeholder="Email"

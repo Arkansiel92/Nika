@@ -99,7 +99,7 @@ function Router() {
                             <Stack.Screen
                                 name="Login"
                                 component={Login}
-                                options={{title: 'Se connecter'}}
+                                options={{title: 'Connexion'}}
                             />
                             <Stack.Screen
                                 name="Register"

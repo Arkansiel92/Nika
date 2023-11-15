@@ -99,7 +99,19 @@ class Server
         })
 
         this.app.post("/messages", authenticateJWT, async (req, res) => {
-            console.log(req.body);
+            try {
+                let messagesRepo = new MessagesRepository();
+    
+                await messagesRepo.insert(['receiver_id', 'sender_id', 'content'], [req.body.receiver_id, req.body.sender_id, req.body.content]);
+    
+                let data = await messagesRepo.findMessagesByUser(this.user.getId(), req.body.receiver_id);
+                
+                res.status(200).send({ code: 200, data: data});
+            } catch (error) {
+                console.log(error);
+
+                res.status(500).send({ code: 500, msg: error });
+            }
         })
     }
 

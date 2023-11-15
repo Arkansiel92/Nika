@@ -14,8 +14,6 @@ class ServiceEntityRepository extends Database
     public async insert(fields: Array<string>, values: Array<string>) {
         return new Promise(async (resolve, reject) => {
             let sql = `INSERT INTO ${this.entity}(${fields.join(', ')}) VALUES(${Array.from({ length: fields.length }, () => '?').join(', ')})`;
-            console.log(sql);
-            console.log(values);
 
             this.getConnection().query(sql, values, async function(err, result) {
                 if(err) {
