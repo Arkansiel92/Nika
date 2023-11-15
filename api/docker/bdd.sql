@@ -1,10 +1,10 @@
 CREATE TABLE IF NOT EXISTS users (
     id int auto_increment,
     username varchar(255) not null,
-    email varchar(255) not null,
+    email varchar(255) not null unique,
     password varchar(255) not null,
     created_at datetime default current_timestamp,
-    primary key(id)
+    PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS messages (
@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS messages (
     receiver_id int,
     content longtext not null,
     published_at datetime default current_timestamp,
-    primary key(id),
+    PRIMARY KEY (id),
     foreign key(sender_id) references users(id),
     foreign key(receiver_id) references users(id)
 );

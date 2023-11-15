@@ -22,7 +22,7 @@ function Login({ navigation }: any) {
 
             if(res.code === 200) {
                 try {
-                    login(res._token)
+                    login(res._token);
                 } catch (error) {
                     console.log(error);
                 }

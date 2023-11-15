@@ -67,7 +67,7 @@ export const AuthProvider = ({ children }: any) => {
             setAuthState({ user: user, isAuthenticated: true });
             socket.emit('login', user);
 
-            console.log(user);
+            // console.log(user);
         } catch (error) {
             console.log(error);
         }
@@ -76,6 +76,7 @@ export const AuthProvider = ({ children }: any) => {
     const logout = async () => {
         await removeItem("@Nika:_token");
         setAuthState({ user: null, isAuthenticated: false });
+        socket.emit('login', null);
     }
     
     return (

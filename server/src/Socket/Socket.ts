@@ -32,10 +32,8 @@ class Socket
         return this.socket;
     }
 
-    public setUser(user: User): this {
+    public setUser(user: User | null): this {
         this.user = user;
-        console.log(`l'utilisateur ${user.username} est connecté !`);
-
         return this;
     }
 

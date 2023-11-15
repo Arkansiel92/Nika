@@ -3,6 +3,8 @@ import bodyParser from 'body-parser';
 import User from '../User/User';
 import { User as UserType } from "../Types/User";
 import authenticateJWT from '../Middleware/authenticateJWT';
+import UsersRepository from '../Repositories/UsersRepository';
+import MessagesRepository from '../Repositories/MessagesRepository';
 
 class Server
 {
@@ -24,7 +26,13 @@ class Server
 
         this.app.post('/users/register', async (req, res) => {
             try {
-                await this.user.addUser(req.body);
+                let usersRepo = new UsersRepository();
+                let passwordHash = await this.user.hashPassword(req.body.password);
+
+                await usersRepo.insert(
+                    ['username', 'email', 'password'],
+                    [req.body.username, req.body.email, passwordHash]
+                );
 
                 res.status(200).send({code: 200, msg: 'Le compte a été crée avec succès.'});
             } catch (error) {
@@ -36,8 +44,10 @@ class Server
 
         this.app.post('/users/login', async (req, res) => {
             try {
-                const user: UserType = await this.user.findUserByEmail(req.body.email);
+                let usersRepo = new UsersRepository();
 
+                let user: any = await usersRepo.findOneBy({email: req.body.email});
+                
                 if(!await this.user.comparePassword(req.body.password, user.password)) {
                     throw "Email ou mot de passe incorrect.";
                 }
@@ -63,9 +73,8 @@ class Server
 
         this.app.get('/users/conversations', authenticateJWT, async (req, res) => {
             try {
-                
-
-                const data = await this.user.findConversations();
+                let messagesRepo = new MessagesRepository();
+                let data = await messagesRepo.findConversationsByUser(this.user.getId());
 
                 res.status(200).send({ code: 200, msg: 'Récupération des conversations', data: data});
             } catch (error) {
@@ -77,8 +86,11 @@ class Server
 
         this.app.get('/users/messages/:targetId', authenticateJWT, async (req, res) => {
             try {
-                const data = await this.user.findMessagesByUser(req.params['targetId']);
-                const target = await this.user.findUserById(req.params['targetId'])
+                let messagesRepo = new MessagesRepository();
+                let usersRepo = new UsersRepository();
+                
+                let data = await messagesRepo.findMessagesByUser(this.user.getId(), req.params['targetId']);
+                let target = await usersRepo.findOneBy({ id: req.params['targetId'] })
 
                 res.status(200).send({ code: 200, msg: 'Récupération des messages', data: data, target: target});
             } catch (error) {
