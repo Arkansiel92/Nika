@@ -1,8 +1,7 @@
 import { useEffect, useState, useContext } from "react";
 import { TextInput, View, Text, StyleSheet } from "react-native"
-import { socketContext } from "../../Services/Contexts/Socket/Socket";
-import useFetch from "../../Services/Hooks/UseFetch";
-import { PORT_API, SERVER_ORIGIN_IP } from "@env";
+import { socketContext } from "../../Contexts/Socket";
+import { AuthContext } from "../../Contexts/Auth";
 
 interface props {
     handleSubmit: (a: string, b: React.Dispatch<React.SetStateAction<string>>) => void
@@ -10,19 +9,23 @@ interface props {
 
 function InputContainer({ handleSubmit }: props) {
     const socket = useContext(socketContext);
-    const [fetchAPI, loading] = useFetch();
     const [input, onChangeInput] = useState("");
     const [userWriting, setUserWriting] = useState<Array<String>>([]);
+    const { authState } = useContext(AuthContext);
 
     useEffect(() => {
-       if(input !== "") {
-            console.log('utilisateur en train d\'écrire');
-        
-            socket.emit('userWriting', {room: '', value: true});
-       } else {
-            console.log('utilisateur a fini d\'écrire');
+       input !== "" 
+       ? socket.emit('userWriting', true)
+       : socket.emit('userWriting', false);
 
-            socket.emit('userWriting', {room: '', value: false});
+       const setUsersWriting = (users: Array<string>) => {
+            if(users.length) setUserWriting(users.filter(u => u !== authState.user?.username));
+       }
+
+       socket.on('users-writing', setUsersWriting);
+
+       return () => {
+            socket.off('users-writing', setUsersWriting);
        }
     }, [input]);
 
@@ -30,9 +33,7 @@ function InputContainer({ handleSubmit }: props) {
         <View style={styles.container}>
             <Text>
                 { 
-                    userWriting.length >= 2 && userWriting.join(',') + ' sont en train d\'écrire' 
-                }
-                {
+                    userWriting.length >= 2 && userWriting.join(',') + ' sont en train d\'écrire' ||
                     userWriting.length == 1 && userWriting[0] + ' est en train d\'écrire' 
                 }
             </Text>

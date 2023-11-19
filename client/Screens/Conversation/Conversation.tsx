@@ -1,11 +1,12 @@
 import { useEffect, useContext, useState } from "react";
 import { View, ScrollView, Text, StyleSheet } from "react-native";
-import useFetch from "../../Services/Hooks/UseFetch";
+import useFetch from "../../Hooks/UseFetch";
 import { PORT_API, SERVER_ORIGIN_IP } from "@env";
-import { AuthContext } from "../../Services/Contexts/Auth/Auth";
+import { AuthContext } from "../../Contexts/Auth";
 import { Message } from "../../Types/Message";
 import InputContainer from "../../Components/InputContainer/InputContainer";
 import { User } from "../../Types/User";
+import { socketContext } from "../../Contexts/Socket";
 
 interface props {
     route: any
@@ -16,8 +17,10 @@ function Conversation({ route, navigation }: props) {
     const [fetchAPI, loading] = useFetch();
     const [messages, setMessage] = useState<Array<Message>>([]);
     const [target, setTarget] = useState<User | null>(null);
+    const [conversationId, setConversationId] = useState<string | null>(null);
     const { targetId } = route.params;
     const { authState } = useContext(AuthContext);
+    const socket = useContext(socketContext);
 
     const getConversation = async () => {
         await fetchAPI({
@@ -28,7 +31,7 @@ function Conversation({ route, navigation }: props) {
         .then(data => {
             if (data.code === 200) {
                 setMessage(data.data);
-                setTarget(data.target);
+                if(!target) setTarget(data.target);
             }
         });
     }
@@ -53,8 +56,24 @@ function Conversation({ route, navigation }: props) {
 
     useEffect(() => {
         if(!authState.isAuthenticated) navigation.navigate('Login');
+        
+        const setConversation = (id: string) => {
+            setConversationId(id);
+        }
+        
+        if(!conversationId) {   
+            socket.emit('set-conversation', targetId);
+        };
 
+        socket.on('set-conversation', setConversation);
+        socket.on('get-messages', getConversation);
+        
         getConversation();
+
+        return () => {
+            socket.off('set-conversation', setConversation);
+            socket.off('get-messages', getConversation);
+        }
     }, []);
 
     return (

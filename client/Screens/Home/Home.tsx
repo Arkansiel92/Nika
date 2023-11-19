@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { View, Text } from 'react-native'; 
-import { AuthContext } from '../../Services/Contexts/Auth/Auth';
-import useFetch from '../../Services/Hooks/UseFetch';
+import { AuthContext } from '../../Contexts/Auth';
+import useFetch from '../../Hooks/UseFetch';
 import { SERVER_ORIGIN_IP, PORT_API } from '@env';
 import CardsView from '../../Components/CardsView/CardsView';
 import { Conversation } from '../../Types/Conversation';

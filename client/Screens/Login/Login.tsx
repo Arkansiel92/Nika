@@ -1,8 +1,8 @@
 import { useState, useContext } from "react";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
-import useFetch from "../../Services/Hooks/UseFetch";
+import useFetch from "../../Hooks/UseFetch";
 import { SERVER_ORIGIN_IP, PORT_API } from '@env';
-import { AuthContext } from "../../Services/Contexts/Auth/Auth";
+import { AuthContext } from "../../Contexts/Auth";
 
 function Login({ navigation }: any) {
     const [fetchAPI, loading] = useFetch();

@@ -1,21 +1,20 @@
 import express, { Express } from 'express';
 import bodyParser from 'body-parser';
-import User from '../User/User';
-import { User as UserType } from "../Types/User";
 import authenticateJWT from '../Middleware/authenticateJWT';
 import UsersRepository from '../Repositories/UsersRepository';
 import MessagesRepository from '../Repositories/MessagesRepository';
+import Users from '../Entities/User';
 
 class Server
 {
     private app: Express
     private port: number
-    private user: User
+    private user: Users
 
     constructor() {
         this.app = express();
         this.port = 6060;
-        this.user = new User();
+        this.user = new Users();
 
         this.initialize()
     }

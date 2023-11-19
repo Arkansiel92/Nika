@@ -1,6 +1,6 @@
 import { useContext, useEffect } from 'react';
 import { View } from 'react-native';
-import { AuthContext } from '../../Services/Contexts/Auth/Auth';
+import { AuthContext } from '../../Contexts/Auth';
 
 interface props {
     navigation: any

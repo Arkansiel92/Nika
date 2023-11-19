@@ -6,37 +6,54 @@ import Socket from '../Socket/Socket';
 class Io
 {
     private static instance: Io = new Io();
-    private app: Express
-    private server: http.Server
-    private io: Server
+    private static app: Express = express();
+    private static server: http.Server = http.createServer(this.app);
+    public static io: Server;
+    private sockets: any
 
     constructor() {
-        this.app = express();
-        this.server = http.createServer(this.app);
-        this.io = new Server(this.server);
-
-        this.initialize();
+        this.sockets = {};
+        
+        Io.initialize();
     }
 
-    private initialize(): void {
-        this.io.on('connect', (socket) => {
-            console.log(`new socket : ${socket.id}`);
-            new Socket(socket);
+    private static initialize(): void {
+        Io.io = new Server(Io.server);
+        
+        Io.io.on('connect', (socket) => {
+            new Socket(socket);  
         })
     }
 
     public static getInstance(): Io {
+        if (!Io.instance) {
+            Io.instance = new Io();
+        }
+
         return Io.instance;
     }
 
-    public start(port: number) {
-        this.server.listen(port, () => {
-            console.log(`SERVER RUNNING ON PORT ${port}`);
-        });
+    public getSockets() {
+        return this.sockets;
     }
 
-    public getIo(): Server {
-        return this.io;
+    public getSocket(id: string): Socket {
+        return this.sockets[id];
+    }
+
+    public addSocket(socket: Socket): this | void {
+        const id = socket.getUser()?.id
+
+        if(!id) return;
+
+        this.sockets[id] = socket;
+        return this;
+    }
+
+    public start(port: number) {
+        Io.server.listen(port, () => {
+            console.log(`SERVER RUNNING ON PORT ${port}`);
+        });
     }
 }
 

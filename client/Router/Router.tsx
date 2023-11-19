@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { AuthContext } from "../Services/Contexts/Auth/Auth";
+import { AuthContext } from "../Contexts/Auth";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Register from "../Screens/Register/Register";
 import Login from "../Screens/Login/Login";
