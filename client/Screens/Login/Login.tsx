@@ -13,7 +13,7 @@ function Login({ navigation }: any) {
     const sendCrendentials = async () => {
         if(email !== '' && password !== '') {
             const res = await fetchAPI({
-                url: `http://${SERVER_ORIGIN_IP}:${PORT_API}/users/login`,
+                url: `http://${SERVER_ORIGIN_IP}:${PORT_API}/api/auth`,
                 method: 'POST',
                 body: JSON.stringify({email: email, password: password})
             })
@@ -57,7 +57,7 @@ function Login({ navigation }: any) {
             </View>
 
             <View style={{ marginTop: 30 }}>
-                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 20 }}>
+                <View style={{ alignItems: 'center', justifyContent: 'center', gap: 20 }}>
                     <Text>Vous n'avez pas de compte ?</Text>
                     <View style={styles.styleLoginBtn}>
                         <Button

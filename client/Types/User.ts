@@ -1,7 +1,6 @@
 export interface User {
-    id: number
-    username: string
-    email: string
-    exp: number
-    iat: number
+    id: number,
+    username: string,
+    email: string,
+    created_at : string,
 }

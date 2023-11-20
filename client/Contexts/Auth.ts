@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { User } from "../Types/User";
+import { User } from "../Types/UserToken";
 import { AuthState } from "../Types/AuthState";
 
 interface AuthContext {

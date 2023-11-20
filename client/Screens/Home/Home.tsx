@@ -12,9 +12,9 @@ import {
 import { AuthContext } from "../../Contexts/Auth";
 import useFetch from "../../Hooks/UseFetch";
 import { SERVER_ORIGIN_IP, PORT_API } from "@env";
-import CardsView from "../../Components/CardsView/CardsView";
 import { Conversation } from "../../Types/Conversation";
 import { socketContext } from "../../Contexts/Socket";
+import { User } from "../../Types/User";
 
 interface props {
   navigation: any;
@@ -26,18 +26,20 @@ function Home({ navigation }: props) {
   const [fetchAPI, loading] = useFetch();
   const [conversations, setConversations] = useState<Array<Conversation>>([]);
   const [showUsersList, setShowUsersList] = useState(false);
-  
+  const [users, setUsers] = useState<Array<User>>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+
   const handleSelectConversation = (userId: any) => {
     navigation.navigate("Conversation", { targetId: userId });
   };
 
   const filteredUsers = users.filter((user) =>
-    user.name.toLowerCase().includes(searchQuery.toLowerCase())
+    user.username.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const getConversations = async () => {
     await fetchAPI({
-      url: `http://${SERVER_ORIGIN_IP}:${PORT_API}/users/conversations`,
+      url: `http://${SERVER_ORIGIN_IP}:${PORT_API}/api/messages/${authState.user?.id}`,
       method: "GET",
     })
       .then((res) => res.json())
@@ -47,6 +49,17 @@ function Home({ navigation }: props) {
         }
       });
   };
+
+  const getUsers = async () => {
+    await fetchAPI({
+      url : `http://${SERVER_ORIGIN_IP}:${PORT_API}/api/users`,
+      method: 'GET'
+    })
+    .then(res => res.json())
+    .then(data => {
+      setUsers(data.data)
+    });
+  }
 
   const handleAddConversation = () => {
     setShowUsersList(true);
@@ -75,6 +88,7 @@ function Home({ navigation }: props) {
     if (!authState.isAuthenticated) navigation.navigate("Login");
 
     getConversations();
+    getUsers();
 
     const unsubscribe = navigation.addListener("focus", () =>
       socket.emit("remove-room", null)
@@ -126,11 +140,11 @@ function Home({ navigation }: props) {
           {/* Liste des utilisateurs filtrés */}
           <FlatList
             data={filteredUsers}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
               <TouchableOpacity onPress={() => handleSelectUser(item.id)}>
                 <View style={styles.userItem}>
-                  <Text style={styles.userName}>{item.name}</Text>
+                  <Text style={styles.userName}>{item.username}</Text>
                 </View>
               </TouchableOpacity>
             )}

@@ -16,8 +16,8 @@ import { PORT_API, SERVER_ORIGIN_IP } from "@env";
 import { AuthContext } from "../../Contexts/Auth";
 import { Message } from "../../Types/Message";
 import InputContainer from "../../Components/InputContainer/InputContainer";
-import { User } from "../../Types/User";
 import { socketContext } from "../../Contexts/Socket";
+import { User } from "../../Types/User";
 
 interface props {
   route: any;
@@ -26,7 +26,7 @@ interface props {
 
 function Conversation({ route, navigation }: props) {
   const [fetchAPI, loading] = useFetch();
-  const [messages, setMessage] = useState<Array<Message>>([]);
+  const [messages, setMessages] = useState<Array<Message>>([]);
   const [target, setTarget] = useState<User | null>(null);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const { targetId } = route.params;
@@ -42,12 +42,12 @@ function Conversation({ route, navigation }: props) {
     setError(null);
     try {
       const response = await fetchAPI({
-        url: `http://${SERVER_ORIGIN_IP}:${PORT_API}/${authState.user?.id}/messages/${targetId}`,
+        url: `http://${SERVER_ORIGIN_IP}:${PORT_API}/api/${authState.user?.id}/messages/${targetId}`,
         method: "GET",
       });
       const data = await response.json();
       if (data.code === 200) {
-        // ...
+        setMessages(data.data);
       }
     } catch (err: any) {
       setError(err.message);
@@ -110,7 +110,7 @@ function Conversation({ route, navigation }: props) {
       keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
     >
       <View style={styles.header}>
-        <Text style={styles.headerText}>Nom du contact</Text>
+        <Text style={styles.headerText}>{target?.username}</Text>
       </View>
 
       <ScrollView
