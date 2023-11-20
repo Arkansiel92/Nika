@@ -1,9 +1,9 @@
 export interface Message {
-  id: number;
+  id: string;
+  text: string;
+  type: string;
   sender_id: number;
   receiver_id: number;
   content: string;
-  published_at: string;
-  type: string;
-  text: string;
+  published_at: Date;
 }
