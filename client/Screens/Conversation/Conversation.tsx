@@ -1,5 +1,16 @@
 import { useEffect, useContext, useState, useRef } from "react";
-import { View, ScrollView, Text, StyleSheet } from "react-native";
+import {
+  View,
+  ScrollView,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  TextInput,
+  KeyboardAvoidingView,
+  FlatList,
+  Platform,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import useFetch from "../../Hooks/UseFetch";
 import { PORT_API, SERVER_ORIGIN_IP } from "@env";
 import { AuthContext } from "../../Contexts/Auth";
@@ -22,22 +33,27 @@ function Conversation({ route, navigation }: props) {
   const { authState } = useContext(AuthContext);
   const socket = useContext(socketContext);
   const scrollRef = useRef<ScrollView>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [messageInput, setMessageInput] = useState("");
 
   const getConversation = async () => {
-    await fetchAPI({
-      url: `http://${SERVER_ORIGIN_IP}:${PORT_API}/${authState.user?.id}/messages/${targetId}`,
-      method: "GET",
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.code === 200) {
-          setMessage(data.data);
-          if (!target) {
-            setTarget(data.target);
-            navigation.setOptions({ title: data.target.username });
-          }
-        }
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await fetchAPI({
+        url: `http://${SERVER_ORIGIN_IP}:${PORT_API}/${authState.user?.id}/messages/${targetId}`,
+        method: "GET",
       });
+      const data = await response.json();
+      if (data.code === 200) {
+        // ...
+      }
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSubmit = async (
@@ -88,65 +104,115 @@ function Conversation({ route, navigation }: props) {
   }, [socket]);
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.container}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
+    >
+      <View style={styles.header}>
+        <Text style={styles.headerText}>Nom du contact</Text>
+      </View>
+
       <ScrollView
+        contentContainerStyle={styles.messagesContainer}
         ref={scrollRef}
-        onContentSizeChange={() =>
-          scrollRef.current?.scrollToEnd({ animated: false })
-        }
       >
-        {messages.map((message, index: number) => (
-          <View key={index} style={styles.containerMessage}>
-            <Text
-              style={
-                message.sender_id === authState.user?.id
-                  ? styles.userMessage
-                  : styles.targetMessage
-              }
+        <FlatList
+          data={messages}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <View
+              style={[
+                styles.bubble,
+                item.type === "sent" ? styles.myBubble : styles.theirBubble,
+              ]}
             >
-              {message.content}
-            </Text>
-            <Text
-              style={
-                message.sender_id === authState.user?.id
-                  ? { marginLeft: "auto", fontSize: 12 }
-                  : { marginRight: "auto", fontSize: 12 }
-              }
-            >
-              {new Date(message.published_at).getHours() +
-                ":" +
-                new Date(message.published_at).getMinutes()}
-            </Text>
-          </View>
-        ))}
+              <Text
+                style={[
+                  styles.messageText,
+                  item.type === "sent" ? styles.myMessageText : {},
+                ]}
+              >
+                {item.text}
+              </Text>
+            </View>
+          )}
+        />
       </ScrollView>
-      <InputContainer handleSubmit={handleSubmit} />
-    </View>
+
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="Écrire un message..."
+          // Autres props nécessaires
+        />
+        <TouchableOpacity>
+          <Ionicons name="send" size={24} color="#007aff" />
+        </TouchableOpacity>
+      </View>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fffff",
+    backgroundColor: "white",
   },
-  containerMessage: {
-    margin: 12,
+  header: {
+    height: 50,
+    backgroundColor: "#f7f7f7",
+    justifyContent: "center",
+    alignItems: "center",
+    borderBottomWidth: 0.5,
+    borderColor: "#ccc",
   },
-  userMessage: {
+  headerText: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  messagesContainer: {
+    flex: 1,
+    justifyContent: "flex-end",
+  },
+  bubble: {
+    maxWidth: "70%",
     padding: 10,
-    marginLeft: "auto",
-    borderRadius: 16,
-    backgroundColor: "#557bf3",
-    fontWeight: "500",
-    color: "#d9e1fc",
+    marginVertical: 5,
+    marginHorizontal: 10,
+    borderRadius: 20,
+    alignSelf: "flex-start",
   },
-  targetMessage: {
-    padding: 10,
-    marginRight: "auto",
-    borderRadius: 16,
-    backgroundColor: "#DEE5F8",
-    fontWeight: "500",
+  theirBubble: {
+    backgroundColor: "#ececec",
+  },
+  myBubble: {
+    alignSelf: "flex-end",
+    backgroundColor: "#007aff",
+  },
+  messageText: {
+    color: "black",
+  },
+  myMessageText: {
+    color: "white",
+  },
+  inputContainer: {
+    flexDirection: "row",
+    margin: 10,
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 25,
+    padding: 5,
+    backgroundColor: "white",
+    marginBottom: 24,
+  },
+  input: {
+    flex: 1,
+    borderWidth: 0,
+    marginHorizontal: 10,
+    paddingHorizontal: 10,
+    height: 40,
   },
 });
 
