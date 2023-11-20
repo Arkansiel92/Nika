@@ -1,88 +1,90 @@
-import { useContext } from 'react';
+import { useContext } from "react";
 import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { AuthContext } from "../Contexts/Auth";
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import Ionicons from "react-native-vector-icons/Ionicons";
 import Register from "../Screens/Register/Register";
 import Login from "../Screens/Login/Login";
 import Home from "../Screens/Home/Home";
 import Profile from "../Screens/Profile/Profile";
-import Logout from '../Screens/Logout/Logout';
-import Groups from '../Screens/Groups/Groups';
-import Conversation from '../Screens/Conversation/Conversation';
+import Logout from "../Screens/Logout/Logout";
+import Groups from "../Screens/Groups/Groups";
+import Conversation from "../Screens/Conversation/Conversation";
 
 function IsAuthenticated() {
-    const Tab = createBottomTabNavigator();
+  const Tab = createBottomTabNavigator();
 
-    return (
-        <Tab.Navigator
-            screenOptions={({ route }) => ({
-                tabBarIcon: ({ focused, color, size }) => {
-                    let iconName = '';
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName = "";
 
-                    if (route.name === 'Home') {
-                        iconName = focused
-                            ? 'chatbubble-ellipses'
-                            : 'chatbubble-ellipses-outline'
-                    } else if (route.name === 'Groups') {
-                        iconName = focused
-                            ? 'people-sharp'
-                            : 'people-outline'
-                    } else if (route.name === 'Profile') {
-                        iconName = focused
-                            ? 'person-circle-sharp'
-                            : 'person-circle-outline'
-                    } else if (route.name === 'Logout') {
-                        iconName = 'exit-outline'
-                        color = 'red'
-                    } else if (route.name === 'Register') {
-                        iconName = focused
-                            ? 'add-circle'
-                            : 'add-circle-outline'
-                    } else if (route.name === 'Login') {
-                        iconName = focused
-                            ? 'person-circle-sharp'
-                            : 'person-circle-outline'
-                    }
+          if (route.name === "Home") {
+            iconName = focused
+              ? "chatbubble-ellipses"
+              : "chatbubble-ellipses-outline";
+          } else if (route.name === "Groups") {
+            iconName = focused ? "people-sharp" : "people-outline";
+          } else if (route.name === "Profile") {
+            iconName = focused
+              ? "person-circle-sharp"
+              : "person-circle-outline";
+          } else if (route.name === "Logout") {
+            iconName = "exit-outline";
+            color = "red";
+          } else if (route.name === "Register") {
+            iconName = focused ? "add-circle" : "add-circle-outline";
+          } else if (route.name === "Login") {
+            iconName = focused
+              ? "person-circle-sharp"
+              : "person-circle-outline";
+          }
 
-                    return <Ionicons name={iconName} size={size} color={color} />
-                }
-            })}
-        >
-            <Tab.Screen
-                name='Home'
-                component={Home}
-                options={{ title: "Messages" }}
-            />
-            <Tab.Screen
-                name="Groups"
-                component={Groups}
-                options={{ title: 'Groupes' }}
-            />
-            <Tab.Screen
-                name='Profile'
-                component={Profile}
-                options={{ title: "Mon profil" }}
-            />
-            <Tab.Screen
-                name='Logout'
-                component={Logout}
-                options={{ title: "Deconnexion" }}
-            />
-        </Tab.Navigator>
-    )
+          return <Ionicons name={iconName} size={size} color={color} />;
+        },
+      })}
+    >
+      <Tab.Screen
+        name="Home"
+        component={Home}
+        options={{
+          title: "Messages",
+          headerStyle: {
+            backgroundColor: '#3498db',
+          },
+          headerTintColor: '#fff',
+        }}
+      />
+      <Tab.Screen
+        name="Groups"
+        component={Groups}
+        options={{
+            title: "Groupes",
+            headerStyle: {
+              backgroundColor: '#3498db',
+            },
+            headerTintColor: '#fff',
+        }}
+      />
+      <Tab.Screen
+        name="Logout"
+        component={Logout}
+        options={{ title: "Deconnexion" }}
+      />
+    </Tab.Navigator>
+  );
 }
 
 function Router() {
-    const Stack = createNativeStackNavigator();
-    const { authState } = useContext(AuthContext);
-
+  const Stack = createNativeStackNavigator();
+  const { authState } = useContext(AuthContext);
     return (
         <NavigationContainer>
             <Stack.Navigator>
                 {
-                    authState.isAuthenticated ? (
+                    true ? (
                         <>
                             <Stack.Screen 
                                 name="IsAuthenticated"
@@ -92,6 +94,12 @@ function Router() {
                             <Stack.Screen
                                 name="Conversation"
                                 component={Conversation}
+                                options={{
+                                  headerStyle: {
+                                      backgroundColor: '#3498db',
+                                  },
+                                  headerTintColor: '#fff',
+                              }}
                             />
                         </>
                     ) : (
@@ -99,12 +107,25 @@ function Router() {
                             <Stack.Screen
                                 name="Login"
                                 component={Login}
-                                options={{title: 'Connexion'}}
+                                options={{
+                                    title: 'Connexion',
+                                    headerStyle: {
+                                        backgroundColor: '#3498db',
+                                    },
+                                    headerTintColor: '#fff',
+                                }}
+                                
                             />
                             <Stack.Screen
                                 name="Register"
                                 component={Register}
-                                options={{title: 'Créer un compte'}}
+                                options={{
+                                    title: 'Créer un compte',
+                                    headerStyle: {
+                                        backgroundColor: '#3498db',
+                                    },
+                                    headerTintColor: '#fff',
+                                }}
                             />
                         </>
                     )
