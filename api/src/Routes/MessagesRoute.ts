@@ -1,6 +1,7 @@
 import Messages from "../Entities/Messages";
 import authenticateJWT from "../Middleware/authenticateJWT";
 import MessagesRepository from "../Repositories/MessagesRepository";
+import UsersRepository from "../Repositories/UsersRepository";
 import ServiceRoute from "./ServiceRoute";
 
 class MessagesRoute extends ServiceRoute
@@ -18,6 +19,7 @@ class MessagesRoute extends ServiceRoute
 
     private initialize() {
         this.app.get('/api/messages/:userId', authenticateJWT, async (req, res) => {
+            console.log('coucou');
             try {
                 let data = await this.repository.findConversationsByUser(req.params['userId']);
 
@@ -29,9 +31,24 @@ class MessagesRoute extends ServiceRoute
             }
         });
 
-        this.app.post('/api/:userId/messages/:targetId', authenticateJWT, async (req, res) => {
+        this.app.get('/api/:userId/messages/:targetId', authenticateJWT, async (req, res) => {
             try {
-   
+                let usersRepo = new UsersRepository();
+                
+                let data = await this.repository.findMessagesByUser(req.params['userId'], req.params['targetId']);
+                let target = await usersRepo.findOneBy({ id: req.params['targetId'] });
+
+                console.log(data);
+
+                res.status(200).send({ code: 200, msg: 'Récupération des messages', data: data, target: target});
+            } catch (error) {
+                res.status(500).send({ code: 500, msg: error });
+            }
+        })
+
+        this.app.post('/api/messages/:userId', authenticateJWT, async (req, res) => {
+            try {
+                
                 this.repository.insert(['receiver_id', 'sender_id', 'content'], [req.body.receiver_id, req.body.sender_id, req.body.content]);
     
                 let data = this.repository.findMessagesByUser(req.params['userId'], req.body.receiver_id);
