@@ -31,7 +31,6 @@ function Groups({ navigation }: props) {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         setGroups(data.data);
       });
   };

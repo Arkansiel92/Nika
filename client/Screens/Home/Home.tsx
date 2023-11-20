@@ -45,8 +45,6 @@ function Home({ navigation }: props) {
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data.data)) {
-          console.log(data.data);
-          
           setConversations(data.data.filter((c: Conversation) => c.username !== authState.user.username));
         }
       });

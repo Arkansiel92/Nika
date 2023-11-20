@@ -66,8 +66,6 @@ export const AuthProvider = ({ children }: any) => {
 
             setAuthState({ user: user, isAuthenticated: true });
             socket.emit('login', user);
-
-            // console.log(user);
         } catch (error) {
             console.log(error);
         }

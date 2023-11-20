@@ -19,7 +19,6 @@ class MessagesRoute extends ServiceRoute
 
     private initialize() {
         this.app.get('/api/messages/:userId', authenticateJWT, async (req, res) => {
-            console.log('coucou');
             try {
                 let data = await this.repository.findConversationsByUser(req.params['userId']);
 
@@ -37,8 +36,6 @@ class MessagesRoute extends ServiceRoute
                 
                 let data = await this.repository.findMessagesByUser(req.params['userId'], req.params['targetId']);
                 let target = await usersRepo.findOneBy({ id: req.params['targetId'] });
-
-                console.log(data);
 
                 res.status(200).send({ code: 200, msg: 'Récupération des messages', data: data, target: target});
             } catch (error) {

@@ -39,7 +39,6 @@ function Conversation({ route, navigation }: props) {
   const [userWriting, setUserWriting] = useState<Array<String>>([]);
 
   const getConversation = async () => {
-    console.log("coucou");
     setIsLoading(true);
     setError(null);
     try {
@@ -94,8 +93,6 @@ function Conversation({ route, navigation }: props) {
     };
 
     const setUsersWriting = (users: Array<string>) => {
-      console.log(users);
-
       setUserWriting(users.filter((u) => u !== authState.user?.username));
     };
 
@@ -114,7 +111,7 @@ function Conversation({ route, navigation }: props) {
       socket.off("get-messages", getMessages);
       socket.off("users-writing", setUsersWriting);
     };
-  }, [socket]);
+  }, [socket, messageInput]);
 
   return (
     <KeyboardAvoidingView
