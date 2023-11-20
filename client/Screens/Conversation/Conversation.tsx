@@ -15,9 +15,9 @@ import useFetch from "../../Hooks/UseFetch";
 import { PORT_API, SERVER_ORIGIN_IP } from "@env";
 import { AuthContext } from "../../Contexts/Auth";
 import { Message } from "../../Types/Message";
-import InputContainer from "../../Components/InputContainer/InputContainer";
 import { socketContext } from "../../Contexts/Socket";
 import { User } from "../../Types/User";
+import * as ImagePicker from "expo-image-picker";
 
 interface props {
   route: any;
@@ -56,6 +56,19 @@ function Conversation({ route, navigation }: props) {
       setError(err.message);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    const uri = (result as any).uri;
+    if (!result.canceled && uri) {
     }
   };
 
@@ -157,11 +170,14 @@ function Conversation({ route, navigation }: props) {
 
       <Text style={{ marginLeft: 10 }}>
         {
-          (userWriting.length >= 2 && userWriting.join(",") + " sont en train d'écrire") ||
-          (userWriting.length == 1 && userWriting[0] + " est en train d'écrire")
+          (userWriting.length >= 2 && userWriting.join(",") + " sont en train d'écrire...") ||
+          (userWriting.length == 1 && userWriting[0] + " est en train d'écrire...")
         }
       </Text>
       <View style={styles.inputContainer}>
+        <TouchableOpacity onPress={pickImage}>
+          <Ionicons name="camera" size={24} color="#007aff" />
+        </TouchableOpacity>
         <TextInput
           style={styles.input}
           placeholder="Écrire un message..."
