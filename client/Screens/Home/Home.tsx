@@ -5,7 +5,6 @@ import useFetch from '../../Hooks/UseFetch';
 import { SERVER_ORIGIN_IP, PORT_API } from '@env';
 import CardsView from '../../Components/CardsView/CardsView';
 import { Conversation } from '../../Types/Conversation';
-import { useIsFocused } from '@react-navigation/native';
 import { socketContext } from '../../Contexts/Socket';
 
 interface props {
@@ -36,7 +35,10 @@ function Home({ navigation }: props) {
 
         getConversations();
 
-        const unsubscribe = navigation.addListener('focus', () => socket.emit('remove-room', null));
+        const unsubscribe = navigation.addListener('focus', async () => {
+            socket.emit('remove-room', null);
+            await getConversations();
+        });
         return unsubscribe;
 
     }, [authState, navigation]);
