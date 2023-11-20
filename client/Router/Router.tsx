@@ -49,17 +49,24 @@ function IsAuthenticated() {
       <Tab.Screen
         name="Home"
         component={Home}
-        options={{ title: "Messages" }}
+        options={{
+          title: "Messages",
+          headerStyle: {
+            backgroundColor: '#3498db',
+          },
+          headerTintColor: '#fff',
+        }}
       />
       <Tab.Screen
         name="Groups"
         component={Groups}
-        options={{ title: "Groupes" }}
-      />
-      <Tab.Screen
-        name="Profile"
-        component={Profile}
-        options={{ title: "Mon profil" }}
+        options={{
+            title: "Groupes",
+            headerStyle: {
+              backgroundColor: '#3498db',
+            },
+            headerTintColor: '#fff',
+        }}
       />
       <Tab.Screen
         name="Logout"
@@ -77,7 +84,7 @@ function Router() {
         <NavigationContainer>
             <Stack.Navigator>
                 {
-                    authState.isAuthenticated ? (
+                    true ? (
                         <>
                             <Stack.Screen 
                                 name="IsAuthenticated"
