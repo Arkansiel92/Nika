@@ -19,9 +19,20 @@ import { socketContext } from "../../Contexts/Socket";
 import { User } from "../../Types/User";
 import * as ImagePicker from "expo-image-picker";
 
+
 interface props {
   route: any;
   navigation: any;
+}
+
+interface Message {
+  id: string;
+  text: string;
+  type: string;
+  sender_id?: number;
+  receiver_id?: number;
+  content?: string;
+  published_at?: Date;
 }
 
 function Conversation({ route, navigation }: props) {
@@ -84,9 +95,50 @@ function Conversation({ route, navigation }: props) {
         }),
       });
 
-      onChangeInput("");
-      socket.emit("get-messages");
-      socket.emit("users-writing", false);
+    const uri = (result as any).uri;
+    if (!result.canceled && uri) {
+    }
+  };
+
+  const getRandomResponse = () => {
+    const randomIndex = Math.floor(Math.random() * responses.length);
+    return responses[randomIndex].text;
+  };
+
+  const scrollToBottom = () => {
+    scrollRef.current?.scrollToEnd({ animated: true });
+  };
+
+  const handleSend = () => {
+    if (messageInput.trim() !== "") {
+      const newMessage: Message = {
+        id: Date.now().toString(),
+        text: messageInput,
+        type: "sent",
+        sender_id: authState.user?.id, // Or some default value
+        receiver_id: targetId, // Or some default value
+        content: messageInput,
+        published_at: new Date(),
+      };
+
+      setMessage((prevMessages) => [...prevMessages, newMessage]);
+      setMessageInput("");
+      scrollToBottom();
+
+      setTimeout(() => {
+        setMessage((prevMessages) => [
+          ...prevMessages,
+          {
+            id: (Date.now() + 1).toString(),
+            text: getRandomResponse(),
+            type: "received",
+            sender_id: targetId, // Or some default value
+            receiver_id: authState.user?.id, // Or some default value
+            content: getRandomResponse(),
+            published_at: new Date(),
+          },
+        ]);
+      }, 1000);
     }
   };
 
@@ -182,9 +234,9 @@ function Conversation({ route, navigation }: props) {
           style={styles.input}
           placeholder="Écrire un message..."
           value={messageInput}
-          onChangeText={onChangeInput}
+          onChangeText={setMessageInput}
         />
-        <TouchableOpacity onPress={handleSubmit}>
+        <TouchableOpacity onPress={handleSend}>
           <Ionicons name="send" size={24} color="#007aff" />
         </TouchableOpacity>
       </View>
@@ -243,7 +295,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     padding: 5,
     backgroundColor: "white",
-    marginBottom: 24,
+    marginBottom: 36,
   },
   input: {
     flex: 1,
