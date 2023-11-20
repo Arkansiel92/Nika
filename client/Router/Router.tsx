@@ -87,6 +87,12 @@ function Router() {
                             <Stack.Screen
                                 name="Conversation"
                                 component={Conversation}
+                                options={{
+                                  headerStyle: {
+                                      backgroundColor: '#3498db',
+                                  },
+                                  headerTintColor: '#fff',
+                              }}
                             />
                         </>
                     ) : (
