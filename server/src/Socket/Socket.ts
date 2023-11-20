@@ -51,8 +51,6 @@ class Socket
     }
 
     public removeRoom(id: string | null): this {
-        console.log('room leave : ' + this.room?.getUuid());
-        
         if(!id) {
             if(this.room) {
                 this.socket.leave(this.room.getUuid());

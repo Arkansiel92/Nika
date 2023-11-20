@@ -4,6 +4,7 @@ import authenticateJWT from '../Middleware/authenticateJWT';
 import UsersRepository from '../Repositories/UsersRepository';
 import MessagesRepository from '../Repositories/MessagesRepository';
 import Users from '../Entities/User';
+import GroupsRepository from '../Repositories/GroupsRepository';
 
 class Server
 {
@@ -90,8 +91,6 @@ class Server
                 
                 let data = await messagesRepo.findMessagesByUser(req.params['userId'], req.params['targetId']);
                 let target = await usersRepo.findOneBy({ id: req.params['targetId'] });
-                
-                if(Array.isArray(data)) console.log(data.length);
 
                 res.status(200).send({ code: 200, msg: 'Récupération des messages', data: data, target: target});
             } catch (error) {
@@ -101,13 +100,26 @@ class Server
 
         this.app.post("/messages/:userId", authenticateJWT, async (req, res) => {
             try {
-                let messagesRepo = new MessagesRepository();
+                const messagesRepo = new MessagesRepository();
     
                 await messagesRepo.insert(['receiver_id', 'sender_id', 'content'], [req.body.receiver_id, req.body.sender_id, req.body.content]);
     
                 let data = await messagesRepo.findMessagesByUser(req.params['userId'], req.body.receiver_id);
                 
                 res.status(200).send({ code: 200, data: data});
+            } catch (error) {
+                console.log(error);
+
+                res.status(500).send({ code: 500, msg: error });
+            }
+        });
+
+        this.app.get("/api/groups/:userId", authenticateJWT, async (req, res) => {
+            try {
+                const GroupsRepo = new GroupsRepository();
+                let data = await GroupsRepo.findGroupsByUser(req.params['userId']);
+
+                res.status(200).send({ code: 200, data: data });
             } catch (error) {
                 console.log(error);
 

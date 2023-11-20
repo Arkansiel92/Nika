@@ -26,30 +26,7 @@ function Home({ navigation }: props) {
   const [fetchAPI, loading] = useFetch();
   const [conversations, setConversations] = useState<Array<Conversation>>([]);
   const [showUsersList, setShowUsersList] = useState(false);
-  const [users, setUsers] = useState([
-    { id: "1", name: "Alice" },
-    { id: "2", name: "Bob" },
-    { id: "3", name: "Charlie" },
-  ]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const dummyConversations = [
-    {
-      id: "1",
-      username: "Alice",
-      lastMessage: "Hello",
-    },
-    {
-      id: "2",
-      username: "Bob",
-      lastMessage: "Hello",
-    },
-    {
-      id: "3",
-      username: "Charlie",
-      lastMessage: "Hello",
-    },
-  ];
-
+  
   const handleSelectConversation = (userId: any) => {
     navigation.navigate("Conversation", { targetId: userId });
   };
