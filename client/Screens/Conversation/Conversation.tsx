@@ -14,10 +14,11 @@ import { Ionicons } from "@expo/vector-icons";
 import useFetch from "../../Hooks/UseFetch";
 import { PORT_API, SERVER_ORIGIN_IP } from "@env";
 import { AuthContext } from "../../Contexts/Auth";
-import { User } from "../../Types/User";
+import { Message } from "../../Types/Message";
 import { socketContext } from "../../Contexts/Socket";
+import { User } from "../../Types/User";
 import * as ImagePicker from "expo-image-picker";
-import responses from "./responses.json";
+
 
 interface props {
   route: any;
@@ -76,6 +77,23 @@ function Conversation({ route, navigation }: props) {
       aspect: [4, 3],
       quality: 1,
     });
+
+    const uri = (result as any).uri;
+    if (!result.canceled && uri) {
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (messageInput !== "") {
+      await fetchAPI({
+        url: `http://${SERVER_ORIGIN_IP}:${PORT_API}/api/messages/${authState.user?.id}`,
+        method: "POST",
+        body: JSON.stringify({
+          receiver_id: targetId,
+          sender_id: authState.user?.id,
+          content: messageInput,
+        }),
+      });
 
     const uri = (result as any).uri;
     if (!result.canceled && uri) {
@@ -204,8 +222,8 @@ function Conversation({ route, navigation }: props) {
 
       <Text style={{ marginLeft: 10 }}>
         {
-          (userWriting.length >= 2 && userWriting.join(",") + " sont en train d'écrire") ||
-          (userWriting.length == 1 && userWriting[0] + " est en train d'écrire")
+          (userWriting.length >= 2 && userWriting.join(",") + " sont en train d'écrire...") ||
+          (userWriting.length == 1 && userWriting[0] + " est en train d'écrire...")
         }
       </Text>
       <View style={styles.inputContainer}>
