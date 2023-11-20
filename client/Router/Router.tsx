@@ -73,37 +73,54 @@ function IsAuthenticated() {
 function Router() {
   const Stack = createNativeStackNavigator();
   const { authState } = useContext(AuthContext);
-
-  return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        {authState.isAuthenticated ? (
-          <>
-            <Stack.Screen
-              name="IsAuthenticated"
-              component={IsAuthenticated}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen name="Conversation" component={Conversation} />
-          </>
-        ) : (
-          <>
-            <Stack.Screen
-              name="Login"
-              component={Login}
-              options={{ title: "Connexion" }}
-            />
-            <Stack.Screen
-              name="Register"
-              component={Register}
-              options={{ title: "Créer un compte" }}
-            />
-          </>
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
-}
+    return (
+        <NavigationContainer>
+            <Stack.Navigator>
+                {
+                    authState.isAuthenticated ? (
+                        <>
+                            <Stack.Screen 
+                                name="IsAuthenticated"
+                                component={IsAuthenticated}
+                                options={{ headerShown: false }}
+                            />
+                            <Stack.Screen
+                                name="Conversation"
+                                component={Conversation}
+                            />
+                        </>
+                    ) : (
+                        <>
+                            <Stack.Screen
+                                name="Login"
+                                component={Login}
+                                options={{
+                                    title: 'Connexion',
+                                    headerStyle: {
+                                        backgroundColor: '#3498db',
+                                    },
+                                    headerTintColor: '#fff',
+                                }}
+                                
+                            />
+                            <Stack.Screen
+                                name="Register"
+                                component={Register}
+                                options={{
+                                    title: 'Créer un compte',
+                                    headerStyle: {
+                                        backgroundColor: '#3498db',
+                                    },
+                                    headerTintColor: '#fff',
+                                }}
+                            />
+                        </>
+                    )
+                }
+            </Stack.Navigator>
+        </NavigationContainer>
+    );
+} 
 // function Router() {
 //     const Tab = createBottomTabNavigator();
 
