@@ -27,11 +27,32 @@ function Home({ navigation }: props) {
   const [conversations, setConversations] = useState<Array<Conversation>>([]);
   const [showUsersList, setShowUsersList] = useState(false);
   const [users, setUsers] = useState([
-    { id: "1", name: "Alice", profilePic: "https://example.com/alice.jpg" },
-    { id: "2", name: "Bob", profilePic: "https://example.com/bob.jpg" },
-    { id: "3", name: "Charlie", profilePic: "https://example.com/charlie.jpg" },
+    { id: "1", name: "Alice" },
+    { id: "2", name: "Bob" },
+    { id: "3", name: "Charlie" },
   ]);
   const [searchQuery, setSearchQuery] = useState("");
+  const dummyConversations = [
+    {
+      id: "1",
+      username: "Alice",
+      lastMessage: "Hello",
+    },
+    {
+      id: "2",
+      username: "Bob",
+      lastMessage: "Hello",
+    },
+    {
+      id: "3",
+      username: "Charlie",
+      lastMessage: "Hello",
+    },
+  ];
+
+  const handleSelectConversation = (userId: any) => {
+    navigation.navigate("Conversation", { targetId: userId });
+  };
 
   const filteredUsers = users.filter((user) =>
     user.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -60,7 +81,18 @@ function Home({ navigation }: props) {
 
   const handleSelectUser = (userId: any) => {
     setShowUsersList(false);
+    navigation.navigate("Conversation", { targetId: userId });
   };
+
+  const renderItem = ({ item }: { item: Conversation }) => (
+    <TouchableOpacity
+      style={styles.itemContainer}
+      onPress={() => handleSelectConversation(item.id)}
+    >
+      <Text>{item.username}</Text>
+      <Text>{item.lastMessage}</Text>
+    </TouchableOpacity>
+  );
 
   useEffect(() => {
     if (!authState.isAuthenticated) navigation.navigate("Login");
@@ -74,20 +106,38 @@ function Home({ navigation }: props) {
   }, [authState, navigation]);
 
   return (
-    <View>
+    <View style={styles.container}>
       {/* Affichage des conversations existantes */}
       {conversations.length === 0 ? (
-        <Text>Aucun messages, vous n'avez pas d'amis.</Text>
+        <Text style={styles.noConversationsText}>
+          Aucun message, vous n'avez pas d'amis.
+        </Text>
       ) : (
-        <CardsView data={conversations} />
+        <FlatList
+          data={conversations}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }: { item: Conversation }) => (
+            <TouchableOpacity
+              style={styles.itemContainer}
+              onPress={() => handleSelectConversation(item.id)}
+            >
+              <View style={styles.textContainer}>
+                <Text style={styles.userName}>{item.username}</Text>
+                <Text style={styles.lastMessage}>{item.lastMessage}</Text>
+              </View>
+            </TouchableOpacity>
+          )}
+        />
       )}
 
       {/* Bouton pour ajouter une conversation */}
-      <Button title="+" onPress={handleAddConversation} />
+      <View style={styles.addButtonContainer}>
+        <Button title="+" onPress={handleAddConversation} />
+      </View>
 
       {/* Liste des utilisateurs pour démarrer une nouvelle conversation */}
       {showUsersList && (
-        <View>
+        <View style={styles.usersListContainer}>
           {/* Barre de recherche pour filtrer les utilisateurs */}
           <TextInput
             style={styles.searchBar}
@@ -102,12 +152,8 @@ function Home({ navigation }: props) {
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <TouchableOpacity onPress={() => handleSelectUser(item.id)}>
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  <Image
-                    source={{ uri: item.profilePic }}
-                    style={{ width: 50, height: 50, borderRadius: 25 }}
-                  />
-                  <Text>{item.name}</Text>
+                <View style={styles.userItem}>
+                  <Text style={styles.userName}>{item.name}</Text>
                 </View>
               </TouchableOpacity>
             )}
@@ -122,6 +168,43 @@ function Home({ navigation }: props) {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
+  noConversationsText: {
+    textAlign: "center",
+    marginTop: 20,
+  },
+  itemContainer: {
+    flexDirection: "row",
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+    alignItems: "center",
+  },
+  profilePic: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+  },
+  textContainer: {
+    marginLeft: 10,
+  },
+  userName: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  lastMessage: {
+    fontSize: 14,
+    color: "gray",
+  },
+  addButtonContainer: {
+    margin: 10,
+  },
+  usersListContainer: {
+    marginTop: 20,
+  },
   searchBar: {
     height: 40,
     borderColor: "gray",
@@ -129,6 +212,11 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     borderRadius: 5,
     margin: 10,
+  },
+  userItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 10,
   },
 });
 
