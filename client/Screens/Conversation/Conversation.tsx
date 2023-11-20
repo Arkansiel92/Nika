@@ -14,14 +14,24 @@ import { Ionicons } from "@expo/vector-icons";
 import useFetch from "../../Hooks/UseFetch";
 import { PORT_API, SERVER_ORIGIN_IP } from "@env";
 import { AuthContext } from "../../Contexts/Auth";
-import { Message } from "../../Types/Message";
-import InputContainer from "../../Components/InputContainer/InputContainer";
-import { socketContext } from "../../Contexts/Socket";
 import { User } from "../../Types/User";
+import { socketContext } from "../../Contexts/Socket";
+import * as ImagePicker from "expo-image-picker";
+import responses from "./responses.json";
 
 interface props {
   route: any;
   navigation: any;
+}
+
+interface Message {
+  id: string;
+  text: string;
+  type: string;
+  sender_id?: number;
+  receiver_id?: number;
+  content?: string;
+  published_at?: Date;
 }
 
 function Conversation({ route, navigation }: props) {
@@ -59,21 +69,58 @@ function Conversation({ route, navigation }: props) {
     }
   };
 
-  const handleSubmit = async () => {
-    if (messageInput !== "") {
-      await fetchAPI({
-        url: `http://${SERVER_ORIGIN_IP}:${PORT_API}/api/messages/${authState.user?.id}`,
-        method: "POST",
-        body: JSON.stringify({
-          receiver_id: targetId,
-          sender_id: authState.user?.id,
-          content: messageInput,
-        }),
-      });
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
 
-      onChangeInput("");
-      socket.emit("get-messages");
-      socket.emit("users-writing", false);
+    const uri = (result as any).uri;
+    if (!result.canceled && uri) {
+    }
+  };
+
+  const getRandomResponse = () => {
+    const randomIndex = Math.floor(Math.random() * responses.length);
+    return responses[randomIndex].text;
+  };
+
+  const scrollToBottom = () => {
+    scrollRef.current?.scrollToEnd({ animated: true });
+  };
+
+  const handleSend = () => {
+    if (messageInput.trim() !== "") {
+      const newMessage: Message = {
+        id: Date.now().toString(),
+        text: messageInput,
+        type: "sent",
+        sender_id: authState.user?.id, // Or some default value
+        receiver_id: targetId, // Or some default value
+        content: messageInput,
+        published_at: new Date(),
+      };
+
+      setMessage((prevMessages) => [...prevMessages, newMessage]);
+      setMessageInput("");
+      scrollToBottom();
+
+      setTimeout(() => {
+        setMessage((prevMessages) => [
+          ...prevMessages,
+          {
+            id: (Date.now() + 1).toString(),
+            text: getRandomResponse(),
+            type: "received",
+            sender_id: targetId, // Or some default value
+            receiver_id: authState.user?.id, // Or some default value
+            content: getRandomResponse(),
+            published_at: new Date(),
+          },
+        ]);
+      }, 1000);
     }
   };
 
@@ -162,13 +209,16 @@ function Conversation({ route, navigation }: props) {
         }
       </Text>
       <View style={styles.inputContainer}>
+        <TouchableOpacity onPress={pickImage}>
+          <Ionicons name="camera" size={24} color="#007aff" />
+        </TouchableOpacity>
         <TextInput
           style={styles.input}
           placeholder="Écrire un message..."
           value={messageInput}
-          onChangeText={onChangeInput}
+          onChangeText={setMessageInput}
         />
-        <TouchableOpacity onPress={handleSubmit}>
+        <TouchableOpacity onPress={handleSend}>
           <Ionicons name="send" size={24} color="#007aff" />
         </TouchableOpacity>
       </View>
@@ -227,7 +277,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     padding: 5,
     backgroundColor: "white",
-    marginBottom: 24,
+    marginBottom: 36,
   },
   input: {
     flex: 1,
