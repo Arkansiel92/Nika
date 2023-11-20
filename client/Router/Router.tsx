@@ -84,7 +84,7 @@ function Router() {
         <NavigationContainer>
             <Stack.Navigator>
                 {
-                    true ? (
+                    authState.isAuthenticated ? (
                         <>
                             <Stack.Screen 
                                 name="IsAuthenticated"

@@ -39,13 +39,13 @@ function Groups({ navigation }: props) {
     return(
         <View style={styles.container}>
             <ScrollView>
-                {
+                {/* {
                     groups.length === 0
                     ? <Text>Vous n'êtes dans aucun groupe. Vous n'avez pas d'amis</Text>
                     : groups.map(() => (
-                        
+
                     ))
-                }
+                } */}
             </ScrollView>
         </View>
     )
