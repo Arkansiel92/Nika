@@ -1,21 +1,20 @@
 import express, { Express } from 'express';
 import bodyParser from 'body-parser';
-import User from '../User/User';
-import { User as UserType } from "../Types/User";
 import authenticateJWT from '../Middleware/authenticateJWT';
 import UsersRepository from '../Repositories/UsersRepository';
 import MessagesRepository from '../Repositories/MessagesRepository';
+import Users from '../Entities/User';
 
 class Server
 {
     private app: Express
     private port: number
-    private user: User
+    private user: Users
 
     constructor() {
         this.app = express();
         this.port = 6060;
-        this.user = new User();
+        this.user = new Users();
 
         this.initialize()
     }
@@ -84,13 +83,15 @@ class Server
             }
         })
 
-        this.app.get('/users/messages/:targetId', authenticateJWT, async (req, res) => {
+        this.app.get('/:userId/messages/:targetId', authenticateJWT, async (req, res) => {
             try {
                 let messagesRepo = new MessagesRepository();
                 let usersRepo = new UsersRepository();
                 
-                let data = await messagesRepo.findMessagesByUser(this.user.getId(), req.params['targetId']);
-                let target = await usersRepo.findOneBy({ id: req.params['targetId'] })
+                let data = await messagesRepo.findMessagesByUser(req.params['userId'], req.params['targetId']);
+                let target = await usersRepo.findOneBy({ id: req.params['targetId'] });
+                
+                if(Array.isArray(data)) console.log(data.length);
 
                 res.status(200).send({ code: 200, msg: 'Récupération des messages', data: data, target: target});
             } catch (error) {
@@ -98,13 +99,13 @@ class Server
             }
         })
 
-        this.app.post("/messages", authenticateJWT, async (req, res) => {
+        this.app.post("/messages/:userId", authenticateJWT, async (req, res) => {
             try {
                 let messagesRepo = new MessagesRepository();
     
                 await messagesRepo.insert(['receiver_id', 'sender_id', 'content'], [req.body.receiver_id, req.body.sender_id, req.body.content]);
     
-                let data = await messagesRepo.findMessagesByUser(this.user.getId(), req.body.receiver_id);
+                let data = await messagesRepo.findMessagesByUser(req.params['userId'], req.body.receiver_id);
                 
                 res.status(200).send({ code: 200, data: data});
             } catch (error) {

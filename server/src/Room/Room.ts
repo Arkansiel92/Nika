@@ -6,12 +6,12 @@ class Room
 {
     private uuid: string
     private sockets: Array<Socket>
-    private io: Io
+    private usersWriting: Array<string>
 
     constructor() {
         this.uuid = v4();
         this.sockets = [];
-        this.io = new Io();
+        this.usersWriting = [];
     }
 
     public getUuid(): string {
@@ -33,8 +33,23 @@ class Room
         return this;
     }
 
-    public setUsersWriting({room, value}: {room: string, value: boolean}): void {
-        console.log(room, value);
+    public setUsersWriting(socket: Socket, isWriting: boolean): void {
+        const username = socket.getUser()?.username;
+
+        if(username) {
+            const isInArray = this.usersWriting.includes(username);
+
+            if(isWriting) {
+                if(!isInArray) this.usersWriting.push(username);
+            } else {
+                if(isInArray) this.usersWriting.splice(this.usersWriting.indexOf(username), 1);
+            }
+
+            socket.getSocket()
+            .broadcast
+            .to(this.uuid)
+            .emit('users-writing', this.usersWriting);
+        }
     }
 }
 

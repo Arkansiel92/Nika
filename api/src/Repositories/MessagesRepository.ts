@@ -6,7 +6,7 @@ class MessagesRepository extends ServiceEntityRepository {
         super('messages');
     }
 
-    public findConversationsByUser(userId: number | null) {
+    public findConversationsByUser(userId: number | null){
         return new Promise(async (resolve, reject) => {
             if (!userId) {
                 reject('Veuillez vous connecter.');
@@ -34,7 +34,7 @@ class MessagesRepository extends ServiceEntityRepository {
         })
     }
 
-    public async findMessagesByUser(userId: number | null, targetId: string) {
+    public async findMessagesByUser(userId: string, targetId: string) {
         return new Promise(async (resolve, reject) => {
             let sql = `SELECT * FROM messages 
             WHERE (receiver_id = ? AND sender_id = ?) 

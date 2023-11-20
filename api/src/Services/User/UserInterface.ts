@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-class UserInterface
+class UsersInterface
 {
     public generateAccessToken(data: any) {
         return jwt.sign(
@@ -29,4 +29,4 @@ class UserInterface
     }
 }
 
-export default UserInterface;
+export default UsersInterface;

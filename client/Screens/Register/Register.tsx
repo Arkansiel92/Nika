@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { View, Text, StyleSheet, TextInput, Button } from "react-native";
-import useFetch from "../../Services/Hooks/UseFetch";
+import useFetch from "../../Hooks/UseFetch";
 import { SERVER_ORIGIN_IP, PORT_API } from '@env';
 
 function Register() {

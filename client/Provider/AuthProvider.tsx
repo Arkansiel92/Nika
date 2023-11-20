@@ -1,8 +1,8 @@
 import { useState, useEffect, useContext } from 'react';
-import { AuthState } from "../../Types/AuthState";
+import { AuthState } from "../Types/AuthState";
 import { useAsyncStorage } from '../Hooks/UseAsyncStorage';
-import { AuthContext } from '../Contexts/Auth/Auth';
-import { socketContext } from '../Contexts/Socket/Socket';
+import { AuthContext } from '../Contexts/Auth';
+import { socketContext } from '../Contexts/Socket';
 
 function atob(input: string) {
     var keyStr = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/='

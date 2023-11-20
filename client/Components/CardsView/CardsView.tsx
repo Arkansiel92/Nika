@@ -2,7 +2,7 @@ import { ScrollView, StyleSheet } from "react-native";
 import { Conversation } from "../../Types/Conversation";
 import Card from "../Card/Card";
 import { useContext } from "react";
-import { AuthContext } from "../../Services/Contexts/Auth/Auth";
+import { AuthContext } from "../../Contexts/Auth";
 
 interface props {
     data: Array<Conversation>

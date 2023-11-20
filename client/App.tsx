@@ -1,6 +1,6 @@
-import { socket, socketContext } from './Services/Contexts/Socket/Socket';
+import { socket, socketContext } from './Contexts/Socket';
 import Router from './Router/Router';
-import { AuthProvider } from './Services/Provider/AuthProvider';
+import { AuthProvider } from './Provider/AuthProvider';
 
 export default function App() {
 

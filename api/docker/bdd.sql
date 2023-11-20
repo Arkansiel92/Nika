@@ -18,12 +18,12 @@ CREATE TABLE IF NOT EXISTS messages (
     foreign key(receiver_id) references users(id)
 );
 
-INSERT INTO users(username, email, password) VALUES('Test', 'test@test.fr', '$2b$10$KKGO6/5Y1u18z/3gXge6h.C0xVg5Lrfaoz4jmkn4GFtHbsUYllLqC');
-INSERT INTO users(username, email, password) VALUES('Test 2', 'test2@test.fr', '$2b$10$KKGO6/5Y1u18z/3gXge6h.C0xVg5Lrfaoz4jmkn4GFtHbsUYllLqC');
-INSERT INTO users(username, email, password) VALUES('Test 3', 'test3@test.fr', '$2b$10$KKGO6/5Y1u18z/3gXge6h.C0xVg5Lrfaoz4jmkn4GFtHbsUYllLqC');
-INSERT INTO users(username, email, password) VALUES('Test 4', 'test4@test.fr', '$2b$10$KKGO6/5Y1u18z/3gXge6h.C0xVg5Lrfaoz4jmkn4GFtHbsUYllLqC');
-INSERT INTO users(username, email, password) VALUES('Test 5', 'test5@test.fr', '$2b$10$KKGO6/5Y1u18z/3gXge6h.C0xVg5Lrfaoz4jmkn4GFtHbsUYllLqC');
-INSERT INTO users(username, email, password) VALUES('Test 6', 'test6@test.fr', '$2b$10$KKGO6/5Y1u18z/3gXge6h.C0xVg5Lrfaoz4jmkn4GFtHbsUYllLqC');
+INSERT INTO users(username, email, password) VALUES('Joeil', 'test@test.fr', '$2b$10$KKGO6/5Y1u18z/3gXge6h.C0xVg5Lrfaoz4jmkn4GFtHbsUYllLqC');
+INSERT INTO users(username, email, password) VALUES('Kevin', 'kevin@test.fr', '$2b$10$KKGO6/5Y1u18z/3gXge6h.C0xVg5Lrfaoz4jmkn4GFtHbsUYllLqC');
+INSERT INTO users(username, email, password) VALUES('Pierre', 'pierre@test.fr', '$2b$10$KKGO6/5Y1u18z/3gXge6h.C0xVg5Lrfaoz4jmkn4GFtHbsUYllLqC');
+INSERT INTO users(username, email, password) VALUES('Fabien', 'fabien@test.fr', '$2b$10$KKGO6/5Y1u18z/3gXge6h.C0xVg5Lrfaoz4jmkn4GFtHbsUYllLqC');
+INSERT INTO users(username, email, password) VALUES('Louis', 'louis@test.fr', '$2b$10$KKGO6/5Y1u18z/3gXge6h.C0xVg5Lrfaoz4jmkn4GFtHbsUYllLqC');
+INSERT INTO users(username, email, password) VALUES('Luc', 'luc@test.fr', '$2b$10$KKGO6/5Y1u18z/3gXge6h.C0xVg5Lrfaoz4jmkn4GFtHbsUYllLqC');
 
 INSERT INTO messages(sender_id, receiver_id, content) VALUES(1, 2, 'Coucou bro');
 INSERT INTO messages(sender_id, receiver_id, content) VALUES(2, 1, 'Yo bro ça va ?');
