@@ -6,13 +6,8 @@ class MessagesRepository extends ServiceEntityRepository {
         super('messages');
     }
 
-    public findConversationsByUser(userId: number | null){
+    public findConversationsByUser(userId: string | null){
         return new Promise(async (resolve, reject) => {
-            if (!userId) {
-                reject('Veuillez vous connecter.');
-                return;
-            }
-
             let sql = `SELECT u.id, u.username, u.email, m.content, m.published_at
             FROM users u
             JOIN (

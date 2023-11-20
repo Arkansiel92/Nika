@@ -49,17 +49,24 @@ function IsAuthenticated() {
       <Tab.Screen
         name="Home"
         component={Home}
-        options={{ title: "Messages" }}
+        options={{
+          title: "Messages",
+          headerStyle: {
+            backgroundColor: '#3498db',
+          },
+          headerTintColor: '#fff',
+        }}
       />
       <Tab.Screen
         name="Groups"
         component={Groups}
-        options={{ title: "Groupes" }}
-      />
-      <Tab.Screen
-        name="Profile"
-        component={Profile}
-        options={{ title: "Mon profil" }}
+        options={{
+            title: "Groupes",
+            headerStyle: {
+              backgroundColor: '#3498db',
+            },
+            headerTintColor: '#fff',
+        }}
       />
       <Tab.Screen
         name="Logout"
@@ -73,37 +80,60 @@ function IsAuthenticated() {
 function Router() {
   const Stack = createNativeStackNavigator();
   const { authState } = useContext(AuthContext);
-
-  return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        {authState.isAuthenticated ? (
-          <>
-            <Stack.Screen
-              name="IsAuthenticated"
-              component={IsAuthenticated}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen name="Conversation" component={Conversation} />
-          </>
-        ) : (
-          <>
-            <Stack.Screen
-              name="Login"
-              component={Login}
-              options={{ title: "Connexion" }}
-            />
-            <Stack.Screen
-              name="Register"
-              component={Register}
-              options={{ title: "Créer un compte" }}
-            />
-          </>
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
-}
+    return (
+        <NavigationContainer>
+            <Stack.Navigator>
+                {
+                    authState.isAuthenticated ? (
+                        <>
+                            <Stack.Screen 
+                                name="IsAuthenticated"
+                                component={IsAuthenticated}
+                                options={{ headerShown: false }}
+                            />
+                            <Stack.Screen
+                                name="Conversation"
+                                component={Conversation}
+                                options={{
+                                  headerStyle: {
+                                      backgroundColor: '#3498db',
+                                  },
+                                  headerTintColor: '#fff',
+                              }}
+                            />
+                        </>
+                    ) : (
+                        <>
+                            <Stack.Screen
+                                name="Login"
+                                component={Login}
+                                options={{
+                                    title: 'Connexion',
+                                    headerStyle: {
+                                        backgroundColor: '#3498db',
+                                    },
+                                    headerTintColor: '#fff',
+                                }}
+                                
+                            />
+                            <Stack.Screen
+                                name="Register"
+                                component={Register}
+                                options={{
+                                    title: 'Créer un compte',
+                                    headerStyle: {
+                                        backgroundColor: '#3498db',
+                                    },
+                                    headerTintColor: '#fff',
+                                }}
+                            />
+                        </>
+                    )
+                }
+            </Stack.Navigator>
+        </NavigationContainer>
+    );
+} 
 // function Router() {
 //     const Tab = createBottomTabNavigator();
 

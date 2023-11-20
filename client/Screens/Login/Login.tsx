@@ -13,7 +13,7 @@ function Login({ navigation }: any) {
     const sendCrendentials = async () => {
         if(email !== '' && password !== '') {
             const res = await fetchAPI({
-                url: `http://${SERVER_ORIGIN_IP}:${PORT_API}/users/login`,
+                url: `http://${SERVER_ORIGIN_IP}:${PORT_API}/api/auth`,
                 method: 'POST',
                 body: JSON.stringify({email: email, password: password})
             })
@@ -33,8 +33,8 @@ function Login({ navigation }: any) {
     }
 
     return (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <Text>Se connecter</Text>
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 30 }}>
+            <Text style={{ fontSize: 18, fontWeight: 'bold'}}>Se connecter</Text>
             <TextInput
                 style={styles.input}
                 placeholder="Email"
@@ -48,17 +48,25 @@ function Login({ navigation }: any) {
                 secureTextEntry={true}
                 onChangeText={onChangePassword}
             />
-            <Button 
-                title="Se connecter"
-                onPress={sendCrendentials}
-            />
-
-            <View style={{ marginTop: 50 }}>
-                <Text>Vous n'avez pas de compte ?</Text>
+            <View style={styles.styleLoginBtn}>
                 <Button
-                    title="Créer un compte !"
-                    onPress={() => navigation.navigate("Register")}
+                    color="#3E96F4"
+                    title="Se connecter"
+                    onPress={sendCrendentials}
                 />
+            </View>
+
+            <View style={{ marginTop: 30 }}>
+                <View style={{ alignItems: 'center', justifyContent: 'center', gap: 20 }}>
+                    <Text>Vous n'avez pas de compte ?</Text>
+                    <View style={styles.styleLoginBtn}>
+                        <Button
+                            color="#3E96F4"
+                            title="Créer un compte !"
+                            onPress={() => navigation.navigate("Register")}
+                        />
+                    </View>
+                </View>
             </View>
         </View>
     )
@@ -69,10 +77,16 @@ const styles = StyleSheet.create({
         height: 40,
         width: 250,
         margin: 12,
-        borderWidth: 1,
-        borderRadius: 16,
         padding: 10,
-    }
+        borderBottomWidth: 1
+    },
+    styleLoginBtn: {
+        marginLeft: 50,
+        marginRight: 50,
+        borderRadius: 10,
+        overflow: "hidden",
+        marginBottom: 10,
+      },
 });
 
 export default Login;

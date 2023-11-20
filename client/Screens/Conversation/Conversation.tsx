@@ -36,7 +36,7 @@ interface Message {
 
 function Conversation({ route, navigation }: props) {
   const [fetchAPI, loading] = useFetch();
-  const [messages, setMessage] = useState<Array<Message>>([]);
+  const [messages, setMessages] = useState<Array<Message>>([]);
   const [target, setTarget] = useState<User | null>(null);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const { targetId } = route.params;
@@ -45,19 +45,22 @@ function Conversation({ route, navigation }: props) {
   const scrollRef = useRef<ScrollView>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [messageInput, setMessageInput] = useState("");
+  const [messageInput, onChangeInput] = useState("");
+  const [userWriting, setUserWriting] = useState<Array<String>>([]);
 
   const getConversation = async () => {
     setIsLoading(true);
     setError(null);
     try {
       const response = await fetchAPI({
-        url: `http://${SERVER_ORIGIN_IP}:${PORT_API}/${authState.user?.id}/messages/${targetId}`,
+        url: `http://${SERVER_ORIGIN_IP}:${PORT_API}/api/${authState.user?.id}/messages/${targetId}`,
         method: "GET",
       });
+
       const data = await response.json();
       if (data.code === 200) {
-        // ...
+        setMessages(data.data);
+        if (!target) setTarget(data.target);
       }
     } catch (err: any) {
       setError(err.message);
@@ -124,6 +127,10 @@ function Conversation({ route, navigation }: props) {
   useEffect(() => {
     if (!authState.isAuthenticated) navigation.navigate("Login");
 
+    messageInput !== ""
+      ? socket.emit("users-writing", true)
+      : socket.emit("users-writing", false);
+
     const setConversation = (id: string) => {
       setConversationId(id);
     };
@@ -132,10 +139,15 @@ function Conversation({ route, navigation }: props) {
       await getConversation();
     };
 
+    const setUsersWriting = (users: Array<string>) => {
+      setUserWriting(users.filter((u) => u !== authState.user?.username));
+    };
+
     if (!conversationId) {
       socket.emit("set-conversation", targetId);
     }
 
+    socket.on("users-writing", setUsersWriting);
     socket.on("set-conversation", setConversation);
     socket.on("get-messages", getMessages);
 
@@ -144,8 +156,9 @@ function Conversation({ route, navigation }: props) {
     return () => {
       socket.off("set-conversation", setConversation);
       socket.off("get-messages", getMessages);
+      socket.off("users-writing", setUsersWriting);
     };
-  }, [socket]);
+  }, [socket, messageInput]);
 
   return (
     <KeyboardAvoidingView
@@ -154,7 +167,7 @@ function Conversation({ route, navigation }: props) {
       keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
     >
       <View style={styles.header}>
-        <Text style={styles.headerText}>Nom du contact</Text>
+        <Text style={styles.headerText}>{target?.username}</Text>
       </View>
 
       <ScrollView
@@ -168,22 +181,33 @@ function Conversation({ route, navigation }: props) {
             <View
               style={[
                 styles.bubble,
-                item.type === "sent" ? styles.myBubble : styles.theirBubble,
+                item.receiver_id !== authState.user.id
+                  ? styles.myBubble
+                  : styles.theirBubble,
               ]}
             >
               <Text
                 style={[
                   styles.messageText,
-                  item.type === "sent" ? styles.myMessageText : {},
+                  item.receiver_id !== authState.user.id
+                    ? styles.myMessageText
+                    : {},
                 ]}
               >
-                {item.text}
+                {item.content}
               </Text>
             </View>
           )}
+          scrollEnabled={false}
         />
       </ScrollView>
 
+      <Text style={{ marginLeft: 10 }}>
+        {
+          (userWriting.length >= 2 && userWriting.join(",") + " sont en train d'écrire") ||
+          (userWriting.length == 1 && userWriting[0] + " est en train d'écrire")
+        }
+      </Text>
       <View style={styles.inputContainer}>
         <TouchableOpacity onPress={pickImage}>
           <Ionicons name="camera" size={24} color="#007aff" />

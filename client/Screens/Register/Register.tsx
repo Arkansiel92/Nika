@@ -11,7 +11,7 @@ function Register() {
 
     const sendCrendentials = async () => {
         if (email !== '' && password !== '' && username !== '') {
-            const res = await fetchAPI({
+            await fetchAPI({
                 url: `http://${SERVER_ORIGIN_IP}:${PORT_API}/users/register`,
                 method: 'POST',
                 body: JSON.stringify({
@@ -20,37 +20,43 @@ function Register() {
                     password: password
                 })
             })
-                .then(res => res.json())
-                .then(data => console.log(data));
+            .then(res => res.json())
+            .then(data => console.log(data));
         }
     }
 
     return (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <Text>Créer un compte</Text>
-            <TextInput
-                style={styles.input}
-                placeholder="Nom d'utilisateur"
-                value={username}
-                onChangeText={onChangeUsername}
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Email"
-                value={email}
-                onChangeText={onChangeEmail}
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Mot de passe"
-                value={password}
-                secureTextEntry={true}
-                onChangeText={onChangePassword}
-            />
-            <Button
-                title="Créer mon compte"
-                onPress={sendCrendentials}
-            />
+            <View style={{ justifyContent: 'center', alignItems: 'center', gap: 40 }}>
+                <Text style={{fontSize: 18, fontWeight: 'bold'}}>Créer un compte</Text>
+                <View style={{ justifyContent: 'center', alignItems: 'center', gap: 20}}>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Nom d'utilisateur"
+                        value={username}
+                        onChangeText={onChangeUsername}
+                    />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Email"
+                        value={email}
+                        onChangeText={onChangeEmail}
+                    />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Mot de passe"
+                        value={password}
+                        secureTextEntry={true}
+                        onChangeText={onChangePassword}
+                    />
+                </View>
+                <View style={styles.styleLoginBtn}>
+                    <Button
+                        title="Créer mon compte"
+                        onPress={sendCrendentials}
+                    />
+                </View>
+            </View>
         </View>
     )
 }
@@ -60,10 +66,16 @@ const styles = StyleSheet.create({
         height: 40,
         width: 250,
         margin: 12,
-        borderWidth: 1,
-        borderRadius: 16,
         padding: 10,
-    }
+        borderBottomWidth: 1
+    },
+    styleLoginBtn: {
+        marginLeft: 50,
+        marginRight: 50,
+        borderRadius: 10,
+        overflow: "hidden",
+        marginBottom: 10,
+      },
 });
 
 export default Register;
