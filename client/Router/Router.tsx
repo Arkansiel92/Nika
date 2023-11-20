@@ -99,12 +99,25 @@ function Router() {
                             <Stack.Screen
                                 name="Login"
                                 component={Login}
-                                options={{title: 'Connexion'}}
+                                options={{
+                                    title: 'Connexion',
+                                    headerStyle: {
+                                        backgroundColor: '#3498db',
+                                    },
+                                    headerTintColor: '#fff',
+                                }}
+                                
                             />
                             <Stack.Screen
                                 name="Register"
                                 component={Register}
-                                options={{title: 'Créer un compte'}}
+                                options={{
+                                    title: 'Créer un compte',
+                                    headerStyle: {
+                                        backgroundColor: '#3498db',
+                                    },
+                                    headerTintColor: '#fff',
+                                }}
                             />
                         </>
                     )
