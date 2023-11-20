@@ -11,7 +11,7 @@ function Register() {
 
     const sendCrendentials = async () => {
         if (email !== '' && password !== '' && username !== '') {
-            const res = await fetchAPI({
+            await fetchAPI({
                 url: `http://${SERVER_ORIGIN_IP}:${PORT_API}/users/register`,
                 method: 'POST',
                 body: JSON.stringify({
@@ -20,8 +20,8 @@ function Register() {
                     password: password
                 })
             })
-                .then(res => res.json())
-                .then(data => console.log(data));
+            .then(res => res.json())
+            .then(data => console.log(data));
         }
     }
 

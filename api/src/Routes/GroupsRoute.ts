@@ -16,7 +16,7 @@ class GroupsRoute extends ServiceRoute {
     }
 
     private initialize() {
-        this.app.get('api/groups/:userId', authenticateJWT, async (req, res) => {
+        this.app.get('/api/groups/:userId', authenticateJWT, async (req, res) => {
             try {
                 let data = await this.repository.findGroupsByUser(req.params['userId']);
 

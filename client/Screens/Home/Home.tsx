@@ -34,7 +34,7 @@ function Home({ navigation }: props) {
   };
 
   const filteredUsers = users.filter((user) =>
-    user.username.toLowerCase().includes(searchQuery.toLowerCase())
+    user.username.toLowerCase().includes(searchQuery.toLowerCase()) && user.username !== authState.user.username
   );
 
   const getConversations = async () => {
@@ -45,21 +45,21 @@ function Home({ navigation }: props) {
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data.data)) {
-          setConversations(data.data);
+          setConversations(data.data.filter((c: Conversation) => c.username !== authState.user.username));
         }
       });
   };
 
   const getUsers = async () => {
     await fetchAPI({
-      url : `http://${SERVER_ORIGIN_IP}:${PORT_API}/api/users`,
-      method: 'GET'
+      url: `http://${SERVER_ORIGIN_IP}:${PORT_API}/api/users`,
+      method: "GET",
     })
-    .then(res => res.json())
-    .then(data => {
-      setUsers(data.data)
-    });
-  }
+      .then((res) => res.json())
+      .then((data) => {
+        setUsers(data.data);
+      });
+  };
 
   const handleAddConversation = () => {
     setShowUsersList(true);
@@ -74,11 +74,21 @@ function Home({ navigation }: props) {
     navigation.navigate("Conversation", { targetId: userId });
   };
 
+  const getRandomInt = (max: number) => {
+    return Math.floor(Math.random() * max);
+  };
+
   const renderItem = ({ item }: { item: Conversation }) => (
     <TouchableOpacity
       style={styles.itemContainer}
       onPress={() => handleSelectConversation(item.id)}
     >
+      <Image
+        style={{ borderRadius: 90 }}
+        source={{ uri: `https://picsum.photos/${getRandomInt(100)}/80` }}
+        width={80}
+        height={80}
+      />
       <Text>{item.username}</Text>
       <Text>{item.lastMessage}</Text>
     </TouchableOpacity>
@@ -113,8 +123,18 @@ function Home({ navigation }: props) {
               onPress={() => handleSelectConversation(item.id)}
             >
               <View style={styles.textContainer}>
-                <Text style={styles.userName}>{item.username}</Text>
-                <Text style={styles.lastMessage}>{item.lastMessage}</Text>
+                <Image
+                  style={{ borderRadius: 90 }}
+                  source={{
+                    uri: `https://picsum.photos/${getRandomInt(100)}/80`,
+                  }}
+                  width={80}
+                  height={80}
+                />
+                <View style={{ marginLeft: 15 }}>
+                  <Text style={styles.userName}>{item.username}</Text>
+                  <Text style={styles.lastMessage}>{item.content}</Text>
+                </View>
               </View>
             </TouchableOpacity>
           )}
@@ -180,7 +200,8 @@ const styles = StyleSheet.create({
     borderRadius: 25,
   },
   textContainer: {
-    marginLeft: 10,
+    flexDirection: 'row',
+    marginVertical: 15
   },
   userName: {
     fontSize: 16,
