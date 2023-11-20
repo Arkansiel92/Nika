@@ -27,7 +27,9 @@ class Socket
 
         this.socket.on('login', (user) => this.setUser(user));
         this.socket.on('set-conversation', (targetId) => this.setConversation(targetId));
-        this.socket.on('userWriting', (isWriting) => this.room && this.room.setUsersWriting(this, isWriting));
+        this.socket.on('remove-room', (id) => this.removeRoom(id));
+        this.socket.on('users-writing', (isWriting) => this.room && this.room.setUsersWriting(this, isWriting));
+        this.socket.on('get-messages', () => this.room && Io.io.to(this.room.getUuid()).emit('get-messages'));
     }
 
     public getUuid(): string {
@@ -45,6 +47,20 @@ class Socket
     public setUser(user: User | null): this {
         this.user = user;
         this.io.addSocket(this);
+        return this;
+    }
+
+    public removeRoom(id: string | null): this {
+        console.log('room leave : ' + this.room?.getUuid());
+        
+        if(!id) {
+            if(this.room) {
+                this.socket.leave(this.room.getUuid());
+                this.room.removeSocket(this);
+                this.room = null;
+            }
+        }
+
         return this;
     }
 

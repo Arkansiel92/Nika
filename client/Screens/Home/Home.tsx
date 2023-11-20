@@ -5,6 +5,8 @@ import useFetch from '../../Hooks/UseFetch';
 import { SERVER_ORIGIN_IP, PORT_API } from '@env';
 import CardsView from '../../Components/CardsView/CardsView';
 import { Conversation } from '../../Types/Conversation';
+import { useIsFocused } from '@react-navigation/native';
+import { socketContext } from '../../Contexts/Socket';
 
 interface props {
     navigation: any
@@ -12,6 +14,7 @@ interface props {
 
 function Home({ navigation }: props) {
     const { authState } = useContext(AuthContext);
+    const socket = useContext(socketContext);
     const [fetchAPI, loading] = useFetch();
     const [conversations, setConversations] = useState<Array<Conversation>>([]);
 
@@ -33,7 +36,10 @@ function Home({ navigation }: props) {
 
         getConversations();
 
-    }, [authState]);
+        const unsubscribe = navigation.addListener('focus', () => socket.emit('remove-room', null));
+        return unsubscribe;
+
+    }, [authState, navigation]);
 
     return(
         <View>

@@ -1,4 +1,4 @@
-import { useEffect, useContext, useState } from "react";
+import { useEffect, useContext, useState, useRef } from "react";
 import { View, ScrollView, Text, StyleSheet } from "react-native";
 import useFetch from "../../Hooks/UseFetch";
 import { PORT_API, SERVER_ORIGIN_IP } from "@env";
@@ -21,25 +21,29 @@ function Conversation({ route, navigation }: props) {
     const { targetId } = route.params;
     const { authState } = useContext(AuthContext);
     const socket = useContext(socketContext);
+    const scrollRef = useRef<ScrollView>(null);
 
     const getConversation = async () => {
         await fetchAPI({
-            url: `http://${SERVER_ORIGIN_IP}:${PORT_API}/users/messages/${targetId}`,
+            url: `http://${SERVER_ORIGIN_IP}:${PORT_API}/${authState.user?.id}/messages/${targetId}`,
             method: 'GET'
         })
         .then(res => res.json())
         .then(data => {
-            if (data.code === 200) {
+            if (data.code === 200) {   
                 setMessage(data.data);
-                if(!target) setTarget(data.target);
+                if(!target) {
+                    setTarget(data.target);
+                    navigation.setOptions({ title: data.target.username });
+                }
             }
         });
     }
 
-    const handleSubmit = (input: string, onChangeInput: React.Dispatch<React.SetStateAction<string>>) => {
+    const handleSubmit = async (input: string, onChangeInput: React.Dispatch<React.SetStateAction<string>>) => {
         if(input !== "") {
-            fetchAPI({
-                url: `http://${SERVER_ORIGIN_IP}:${PORT_API}/messages`,
+            await fetchAPI({
+                url: `http://${SERVER_ORIGIN_IP}:${PORT_API}/messages/${authState.user?.id}`,
                 method: 'POST',
                 body: JSON.stringify({
                     receiver_id: targetId,
@@ -47,10 +51,10 @@ function Conversation({ route, navigation }: props) {
                     content: input
                 })
             })
-            .then(res => res.json())
-            .then(data => setMessage(data.data));
             
             onChangeInput('');
+            socket.emit('get-messages');
+            socket.emit('users-writing', false);
         }
     }
 
@@ -60,25 +64,32 @@ function Conversation({ route, navigation }: props) {
         const setConversation = (id: string) => {
             setConversationId(id);
         }
-        
+
+        const getMessages = async () => {
+            await getConversation();
+        }
+
         if(!conversationId) {   
             socket.emit('set-conversation', targetId);
         };
 
         socket.on('set-conversation', setConversation);
-        socket.on('get-messages', getConversation);
-        
-        getConversation();
+        socket.on('get-messages', getMessages);
 
+        getConversation();
+        
         return () => {
             socket.off('set-conversation', setConversation);
-            socket.off('get-messages', getConversation);
+            socket.off('get-messages', getMessages);
         }
-    }, []);
+    }, [socket]);
 
     return (
         <View style={styles.container}>
-            <ScrollView>
+            <ScrollView     
+                ref={scrollRef}
+                onContentSizeChange={() => scrollRef.current?.scrollToEnd({ animated: false })}
+            >
             {
                 messages.map((message, index: number) => (
                     <View key={index} style={styles.containerMessage}>

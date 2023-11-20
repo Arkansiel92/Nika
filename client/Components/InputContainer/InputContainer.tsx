@@ -15,11 +15,11 @@ function InputContainer({ handleSubmit }: props) {
 
     useEffect(() => {
        input !== "" 
-       ? socket.emit('userWriting', true)
-       : socket.emit('userWriting', false);
+       ? socket.emit('users-writing', true)
+       : socket.emit('users-writing', false);
 
        const setUsersWriting = (users: Array<string>) => {
-            if(users.length) setUserWriting(users.filter(u => u !== authState.user?.username));
+            setUserWriting(users.filter(u => u !== authState.user?.username));
        }
 
        socket.on('users-writing', setUsersWriting);
