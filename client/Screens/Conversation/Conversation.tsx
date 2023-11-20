@@ -33,22 +33,27 @@ function Conversation({ route, navigation }: props) {
   const { authState } = useContext(AuthContext);
   const socket = useContext(socketContext);
   const scrollRef = useRef<ScrollView>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [messageInput, setMessageInput] = useState("");
 
   const getConversation = async () => {
-    await fetchAPI({
-      url: `http://${SERVER_ORIGIN_IP}:${PORT_API}/${authState.user?.id}/messages/${targetId}`,
-      method: "GET",
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.code === 200) {
-          setMessage(data.data);
-          if (!target) {
-            setTarget(data.target);
-            navigation.setOptions({ title: data.target.username });
-          }
-        }
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await fetchAPI({
+        url: `http://${SERVER_ORIGIN_IP}:${PORT_API}/${authState.user?.id}/messages/${targetId}`,
+        method: "GET",
       });
+      const data = await response.json();
+      if (data.code === 200) {
+        // ...
+      }
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSubmit = async (
@@ -102,12 +107,16 @@ function Conversation({ route, navigation }: props) {
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
     >
       <View style={styles.header}>
         <Text style={styles.headerText}>Nom du contact</Text>
       </View>
 
-      <View style={styles.messagesContainer}>
+      <ScrollView
+        contentContainerStyle={styles.messagesContainer}
+        ref={scrollRef}
+      >
         <FlatList
           data={messages}
           keyExtractor={(item) => item.id.toString()}
@@ -129,17 +138,17 @@ function Conversation({ route, navigation }: props) {
             </View>
           )}
         />
+      </ScrollView>
 
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            value={messages.toString()}
-            placeholder="Écrire un message..."
-          />
-          <TouchableOpacity>
-            <Ionicons name="send" size={24} color="#007aff" />
-          </TouchableOpacity>
-        </View>
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="Écrire un message..."
+          // Autres props nécessaires
+        />
+        <TouchableOpacity>
+          <Ionicons name="send" size={24} color="#007aff" />
+        </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
   );
